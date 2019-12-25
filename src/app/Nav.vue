@@ -1,7 +1,5 @@
 <template>
-  <div class="nav-wrapper">
-    左侧导航
-  </div>
+  <div class="nav-wrapper"></div>
 </template>
 <style lang="less" scoped>
 .nav-wrapper {

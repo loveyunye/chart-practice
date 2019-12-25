@@ -1,22 +1,33 @@
 import echarts from 'echarts';
-import { deepMerge } from '../utils';
+import { deepMerge } from '../../utils';
 
-// 基础柱状图
+// 堆叠柱状图
+/**
+ * data 结构
+ * data = [
+ *  {
+ *    name: '进口',
+ *    data: [
+ *      {
+ *        name: '2019',
+ *        value: 2320
+ *      }
+ *    ]
+ *  }
+ * ]
+ */
 class BarGeneral {
   static defaultOptions = {
-    areaColors: [
-      { offset: 0, color: 'rgba(87, 239, 101, 1)' },
-      { offset: 1, color: 'rgba(87, 239, 101, 0.1)' },
-    ],
+    legend: {
+      left: 'center',
+      bottom: '0%',
+      icon: 'rect',
+      itemHeight: 20,
+      itemWidth: 20,
+    },
     splitLine: {
       color: 'rgba(87, 239, 101, 0.2)',
       type: 'dashed',
-    },
-    label: {
-      show: true,
-      position: 'top',
-      color: 'rgba(87, 239, 101, 1)',
-      fontSize: 20,
     },
     xAxisLabel: {
       color: '#ddd',
@@ -28,6 +39,11 @@ class BarGeneral {
     },
     barWidth: 40,
     splitNumber: 3,
+    areaColors: [
+      [{ offset: 0, color: '#0078FF' }],
+      [{ offset: 0, color: '#F7643C' }],
+    ],
+    defaultArea: [{ offset: 0, color: '#0078FF' }],
   };
   constructor(container, options) {
     this.container = container;
@@ -41,27 +57,46 @@ class BarGeneral {
 
   setOptions() {
     const {
+      legend,
       areaColors,
       splitLine,
-      label,
       xAxisLabel,
       yAxisLabel,
       barWidth,
       splitNumber,
+      defaultArea,
     } = this.options;
     this.chart.setOption({
+      legend: {
+        ...legend,
+        textStyle: {
+          color: '#ffffff',
+          fontSize: 16,
+        },
+        itemGap: 30,
+        selectedMode: false,
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow',
+          shadowStyle: {
+            color: 'rgba(255, 255, 255, 0)',
+          },
+        },
+      },
       grid: {
         top: 20,
         left: '4%',
         right: '4%',
-        bottom: '3%',
+        bottom: '14%',
         containLabel: true,
       },
       xAxis: [
         {
           type: 'category',
           boundaryGap: true,
-          data: this.data.map((item) => item.name),
+          data: this.data[0].data.map((item) => item.name),
           axisTick: {
             show: false,
           },
@@ -89,11 +124,12 @@ class BarGeneral {
           axisLabel: yAxisLabel,
         },
       ],
-      series: [
-        {
+      series: this.data.map((item, index) => {
+        return {
+          name: item.name,
           type: 'bar',
           stack: 'vistors',
-          data: this.data.map((item) => item.value),
+          data: item.data.map((child) => child.value),
           animationDuration: 500,
           barWidth,
           itemStyle: {
@@ -103,13 +139,12 @@ class BarGeneral {
               y: 0,
               x2: 0,
               y2: 1,
-              colorStops: areaColors,
+              colorStops: areaColors[index] || defaultArea,
               global: false,
             },
           },
-          label,
-        },
-      ],
+        };
+      }),
     });
   }
 

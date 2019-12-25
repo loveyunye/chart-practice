@@ -30,7 +30,6 @@ export default {
   width: 100vw;
   min-height: 500px;
   overflow-y: scroll;
-  // background-color: #2a3659;
   .body {
     display: flex;
     justify-content: space-between;

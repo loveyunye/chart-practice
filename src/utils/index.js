@@ -2,11 +2,8 @@ function deepMergeOne(target, source) {
   if (typeof target !== 'object' || typeof source !== 'object') {
     return target;
   }
-  Object.keys(target).forEach((key) => {
+  Object.keys(source).forEach((key) => {
     const sourceValue = source[key];
-    if (!sourceValue) {
-      return;
-    }
     if (typeof sourceValue !== 'object') {
       target[key] = sourceValue;
       return;
@@ -18,10 +15,6 @@ function deepMergeOne(target, source) {
   });
   return target;
 }
-function deepMerge(target, ...sources) {
+export const deepMerge = function(target, ...sources) {
   return sources.reduce(deepMergeOne, target);
-}
-
-export default {
-  deepMerge,
 };

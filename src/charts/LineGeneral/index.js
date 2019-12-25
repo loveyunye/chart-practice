@@ -1,5 +1,5 @@
 import echarts from 'echarts';
-import { deepMerge } from '../utils';
+import { deepMerge } from '../../utils';
 
 // 基础折线图
 class LineBase {
