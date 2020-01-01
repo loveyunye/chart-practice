@@ -6,9 +6,10 @@ export default {
   name: 'main-index',
   methods: {
     async initCharts() {
-      const { default: Chart } = await import('../charts/BarGeneral/index.js');
+      const { default: Chart } = await import('../charts/PiePercentage');
       const chart = new Chart(this.$el);
       chart.initChart();
+      // chart.setData(0.8);
       chart.setData([
         {
           name: '12-21',
