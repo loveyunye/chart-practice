@@ -1,0 +1,114 @@
+{
+  "name": "多段折线图",
+  "width": 500,
+  "data": [
+    {
+      "data": [
+        {
+          "name": "1",
+          "value": 1
+        },
+        {
+          "name": "2",
+          "value": 3
+        },
+        {
+          "name": "3",
+          "value": 6
+        },
+        {
+          "name": "4",
+          "value": 5
+        },
+        {
+          "name": "5",
+          "value": 6
+        },
+        {
+          "name": "6",
+          "value": 3
+        },
+        {
+          "name": "7",
+          "value": 5
+        },
+        {
+          "name": "8",
+          "value": 3
+        },
+        {
+          "name": "9",
+          "value": 3
+        },
+        {
+          "name": "10",
+          "value": 6
+        },
+        {
+          "name": "11",
+          "value": 3
+        },
+        {
+          "name": "12",
+          "value": 3
+        }
+      ],
+      "type": "solid",
+      "name": "今年"
+    },
+    {
+      "data": [
+        {
+          "name": "1",
+          "value": 2
+        },
+        {
+          "name": "2",
+          "value": 4
+        },
+        {
+          "name": "3",
+          "value": 7
+        },
+        {
+          "name": "4",
+          "value": 8
+        },
+        {
+          "name": "5",
+          "value": 8
+        },
+        {
+          "name": "6",
+          "value": 4
+        },
+        {
+          "name": "7",
+          "value": 7
+        },
+        {
+          "name": "8",
+          "value": 5
+        },
+        {
+          "name": "9",
+          "value": 4
+        },
+        {
+          "name": "10",
+          "value": 8
+        },
+        {
+          "name": "11",
+          "value": 5
+        },
+        {
+          "name": "12",
+          "value": 9
+        }
+      ],
+      "type": "dashed",
+      "name": "去年"
+    }
+  ]
+}
