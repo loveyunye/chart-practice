@@ -5,6 +5,7 @@ import store from '../store';
 import defaultIcon from './icon.png';
 import defaultConfig from './defaultConfig.json';
 import { deepMerge } from '../utils';
+import { getKey } from '../cookie/key';
 
 const requireComponent = require.context(
   '.',
@@ -64,5 +65,11 @@ requireComponent.keys().forEach((path) => {
     });
   }
 });
+
+const ChartIndex = chartLists.findIndex((item) => item.key === getKey());
+
 store.dispatch('screen/listHandler', chartLists);
-store.dispatch('chart/setCurrentChart', chartLists[0]);
+store.dispatch(
+  'chart/setCurrentChart',
+  chartLists[ChartIndex > -1 ? ChartIndex : 0],
+);

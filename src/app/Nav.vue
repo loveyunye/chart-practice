@@ -2,7 +2,7 @@
   <div class="nav-wrapper">
     <div class="chart-container">
       <div
-        class="chart-item"
+        :class="`chart-item ${key === item.key ? 'active' : ''}`"
         v-for="(item, index) in chartsList"
         :key="item.config.name + index"
         @click="setCurrentChart(item)"
@@ -20,6 +20,7 @@ import { mapState, mapActions } from 'vuex';
 export default {
   computed: {
     ...mapState('screen', ['chartsList']),
+    ...mapState('chart', ['key']),
   },
   methods: {
     ...mapActions('chart', ['setCurrentChart']),
@@ -41,6 +42,10 @@ export default {
     padding: 10px 20px;
     cursor: pointer;
     transition: all 0.5s;
+
+    &.active {
+      background-color: #061040;
+    }
 
     &::after {
       content: ' ';

@@ -1,4 +1,6 @@
 import { cloneDeep } from 'lodash';
+import { setKey } from '@/cookie/key';
+
 const screen = {
   namespaced: true,
   state: {
@@ -10,12 +12,12 @@ const screen = {
   },
   mutations: {
     setCurrentChart(state, current) {
-      console.log(current);
       state.chartClass = current.chart;
       state.defaultOptions = cloneDeep(current.chart.defaultOptions || {});
       state.defaultData = cloneDeep(current.config.data);
       state.config = cloneDeep(current.config);
       state.key = current.key;
+      setKey(current.key);
     },
   },
   actions: {
