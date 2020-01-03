@@ -1,6 +1,11 @@
 <template>
   <div class="main-wrapper">
-    <ChartWrapper :grid="gridStatus" />
+    <div class="chart">
+      <ChartWrapper :grid="gridStatus" />
+    </div>
+    <div class="panel">
+      <div class="config-panel">配置面板</div>
+    </div>
     <div class="switch">
       <span>网格模式：</span>
       <SwitchInput v-model="gridStatus" />
@@ -10,6 +15,7 @@
 <script>
 import ChartWrapper from '../components/ChartWrapper';
 import SwitchInput from '../components/SwitchInput';
+
 export default {
   name: 'main-index',
   components: {
@@ -27,9 +33,9 @@ export default {
 .main-wrapper {
   height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-around;
   position: relative;
+  align-items: center;
+  padding: 0 20px;
   .switch {
     position: absolute;
     left: 20px;
@@ -37,6 +43,19 @@ export default {
     span {
       line-height: 3rem;
     }
+  }
+  .chart {
+    flex: 1;
+    display: flex;
+    justify-content: space-around;
+  }
+  .panel {
+    margin-left: 100px;
+    width: 360px;
+    height: calc(100% - 40px);
+    background-color: #212844;
+    box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
   }
 }
 </style>

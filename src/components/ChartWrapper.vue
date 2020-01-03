@@ -70,6 +70,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .chart-wrapper {
+  display: inline-block;
   &.grid {
     background-image: linear-gradient(
         rgba(255, 255, 255, 0.2) 1px,
