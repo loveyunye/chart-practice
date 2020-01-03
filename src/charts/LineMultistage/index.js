@@ -75,6 +75,7 @@ class LineMultistage {
             text-align:center;
             font-size: ${tooltip.fontSize}px;
             border-left: 2px solid #B1CAF3;
+            box-shadow: inset 0px 0px 10px 2px rgba(177, 202, 243, 0.5);
             color: ${tooltip.color};
             font-weight: ${tooltip.fontWeight};
             background-color: ${tooltip.backgroundColor};">

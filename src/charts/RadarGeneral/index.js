@@ -34,7 +34,7 @@ class RadarGeneral {
     const areaStepOpacity = (maxAreaOpacity - minAreaOpacity) / splitNum;
     this.chart.setOption({
       radar: {
-        radius: '60%',
+        center: ['50%', '60%'],
         indicator: this.data.map((item) => {
           return {
             text: item.name,

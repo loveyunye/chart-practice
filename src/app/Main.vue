@@ -15,6 +15,7 @@
 <script>
 import ChartWrapper from '../components/ChartWrapper';
 import SwitchInput from '../components/SwitchInput';
+import { getGrid, setGrid, removeGrid } from '@/cookie/grid';
 
 export default {
   name: 'main-index',
@@ -24,8 +25,13 @@ export default {
   },
   data() {
     return {
-      gridStatus: false,
+      gridStatus: getGrid() ? true : false,
     };
+  },
+  watch: {
+    gridStatus(val) {
+      val ? setGrid('grid') : removeGrid();
+    },
   },
 };
 </script>
@@ -56,6 +62,7 @@ export default {
     background-color: #212844;
     box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
+    padding: 20px;
   }
 }
 </style>
