@@ -41,10 +41,10 @@ class PieStackImage {
 
   drawPie() {
     const { clientWidth: width, clientHeight } = this.container;
-    this.container = this.svg
+    this.containerG = this.svg
       .append('g')
       .attr('transform', `translate(${width / 2}, ${clientHeight / 2})`);
-    this.container
+    this.containerG
       .append('image')
       .attr('xlink:href', MainPng)
       .transition()
@@ -57,7 +57,7 @@ class PieStackImage {
 
   drawPolyline(points) {
     const { line } = this.options;
-    this.container
+    this.containerG
       .append('polyline')
       .attr('stroke', line.color)
       .attr('stroke-width', `${line.width}px`)
@@ -73,7 +73,7 @@ class PieStackImage {
 
   drawText(textItem) {
     const { text: textConfig } = this.options;
-    const text = this.container
+    const text = this.containerG
       .append('text')
       .attr('y', textItem.y)
       .attr('fill', '#ffffff')
@@ -101,8 +101,8 @@ class PieStackImage {
   setData(data) {
     if (Array.isArray(data) && data.length > 0) {
       this.data = data.sort((a, b) => b.value - a.value);
-      this.container.selectAll('polyline').remove();
-      this.container.selectAll('text').remove();
+      this.containerG.selectAll('polyline').remove();
+      this.containerG.selectAll('text').remove();
       this.labelLines.forEach((item, index) => {
         item.text.value = this.data[index].value || 0;
         item.text.name = this.data[index].name || '';
