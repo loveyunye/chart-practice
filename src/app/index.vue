@@ -29,7 +29,8 @@ export default {
   height: 100vh;
   width: 100vw;
   min-height: 500px;
-  overflow-y: scroll;
+  // overflow-y: scroll;
+  overflow: hidden;
   .body {
     display: flex;
     justify-content: space-between;
