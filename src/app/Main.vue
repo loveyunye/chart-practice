@@ -56,7 +56,7 @@ export default {
     justify-content: space-around;
   }
   .panel {
-    margin-left: 100px;
+    margin-left: 60px;
     width: 360px;
     height: calc(100% - 40px);
     background-color: #212844;

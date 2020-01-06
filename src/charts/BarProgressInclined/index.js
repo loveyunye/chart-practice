@@ -8,6 +8,7 @@ class BarProgressInclined {
     this.svg = null;
   }
   static defaultOptions = {
+    horizontal: false, // 纵向
     maskConfig: [
       {
         fill: 'rgba(14, 32, 100, 0.2)',
@@ -55,7 +56,6 @@ class BarProgressInclined {
 
   drawLine() {
     const { grid, lineConfig, maskConfig, valueConfig } = this.options;
-
     const RandId = Math.random()
       .toFixed(10)
       .replace('0.', '');
@@ -68,38 +68,6 @@ class BarProgressInclined {
         height - grid.bottom - lineConfig.width / 2,
       ]);
 
-    // 增加渐变
-    // const radialGradients = this.defs
-    //   .selectAll('radialGradient')
-    //   .remove()
-    //   .data(this.data)
-    //   .enter()
-    //   .append('radialGradient')
-    //   .attr('id', (d, i) => {
-    //     return `radialGradient${RandId}${i}`;
-    //   })
-    //   .attr('cx', 0.5)
-    //   .attr('cy', 0.5)
-    //   .attr('r', 0.5);
-    // radialGradients
-    //   .append('stop')
-    //   .attr('offset', 0)
-    //   .attr('stop-color', (d, i) => {
-    //     const { fill } = valueConfig[i] || valueConfig[i % valueConfig.length];
-    //     return fill;
-    //   });
-    // radialGradients
-    //   .append('stop')
-    //   .attr('offset', 0.8)
-    //   .attr('stop-color', (d, i) => {
-    //     const { fill } = valueConfig[i] || valueConfig[i % valueConfig.length];
-    //     return fill;
-    //   });
-    // radialGradients
-    //   .append('stop')
-    //   .attr('offset', 1)
-    //   .attr('stop-color', '#ffffff');
-
     const lineItems = this.containerG
       .selectAll('g')
       .remove()
@@ -111,11 +79,11 @@ class BarProgressInclined {
     lineItems
       .append('polygon')
       .attr('points', (d, i) => {
-        const x1 = grid.left;
-        const y1 = scale(i) - lineConfig.width / 2;
-        const x2 = (width - grid.right) * lineConfig.topLine;
-        const y2 = scale(i) + lineConfig.width / 2;
-        const x3 = (width - grid.right) * lineConfig.bottomLine;
+        const x1 = grid.left,
+          y1 = scale(i) - lineConfig.width / 2,
+          x2 = (width - grid.right) * lineConfig.topLine,
+          y2 = scale(i) + lineConfig.width / 2,
+          x3 = (width - grid.right) * lineConfig.bottomLine;
         lineLengths.push({ x1, y1, x2, y2, x3 });
         return `${x1},${y1} ${x2},${y1} ${x3},${y2} ${x1},${y2}`;
       })
@@ -127,8 +95,6 @@ class BarProgressInclined {
         const { fill } = maskConfig[i] || maskConfig[i % maskConfig.length];
         return fill;
       });
-    // .style('box-shadow', 'inset 0px 0px 10px 2px rgba(177, 202, 243, 0.5)');
-    // .style('box-shadow', 'inset 0px 0px 10px 2px #ffffff');
 
     // 增加value条
     lineItems
@@ -150,7 +116,6 @@ class BarProgressInclined {
         const { fill } = valueConfig[i] || valueConfig[i % valueConfig.length];
         return fill;
       })
-      // .attr('fill', (d, i) => `url(#radialGradients${RandId}${i})`)
       .attr('clip-path', (d, i) => `url(#clipPath${RandId}${i})`);
 
     // 增加切割线
