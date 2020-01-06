@@ -19,6 +19,12 @@ class PieDonut {
       empty: 10,
       value: 20,
     },
+    arcRoll: {
+      number: 3,
+      time: 200,
+      radius: 60,
+      rollRadius: 8,
+    },
     animateTime: 2000,
   };
 
@@ -32,19 +38,52 @@ class PieDonut {
   }
 
   drawPie() {
+    const { arcRoll } = this.options;
     const { clientWidth: width, clientHeight } = this.container;
     this.containerG = this.svg
       .append('g')
       .attr('transform', `translate(${width / 2}, ${clientHeight / 2})`);
-    this.containerG
+    this.innerCircle = this.containerG.append('g').attr('class', 'circle');
+    this.innerCircle
       .append('circle')
       .attr('cx', 0)
       .attr('cy', 0)
-      .attr('r', 60)
+      .attr('r', arcRoll.radius)
       .attr('stroke', '#fff')
       .attr('stroke-width', 2)
       .attr('stroke-dasharray', '5,5')
       .attr('fill', 'none');
+    const dataRoll = Array.from(new Array(arcRoll.number));
+    const itemAngle = (Math.PI * 2) / arcRoll.number;
+    this.innerCircle
+      .append('g')
+      .selectAll('circle')
+      .data(dataRoll)
+      .enter()
+      .append('circle')
+      .attr('cx', (d, i) => {
+        return arcRoll.radius * Math.cos(itemAngle * i).toFixed('3');
+      })
+      .attr('cy', (d, i) => {
+        return arcRoll.radius * Math.sin(itemAngle * i).toFixed('3');
+      })
+      .attr('r', arcRoll.rollRadius)
+      .attr('fill', '#fff');
+    this.circleAnimate();
+    // this.timer = setInterval(this.circleAnimate, 2000);
+  }
+
+  circleAnimate() {
+    if (this.container && this.svg) {
+      console.log(1);
+      this.innerCircle
+        .attr('transform', 'rotate(0)')
+        .transition()
+        .duration(2000)
+        .attr('transform', 'rotate(360)');
+    } else {
+      // this.destroy();
+    }
   }
 
   drawArc() {
@@ -113,6 +152,12 @@ class PieDonut {
           });
         };
       });
+  }
+
+  destroy() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 
   setData(data) {
