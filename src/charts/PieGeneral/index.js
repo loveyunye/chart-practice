@@ -30,26 +30,26 @@ class BarGeneral {
       legend: {
         type: 'scroll',
         orient: 'vertical',
-        left: '70%',
+        right: '10%',
         align: 'left',
-        top: 'bottom',
+        bottom: '10%',
         textStyle: {
           color: '#ffffff',
           fontSize: 16,
         },
-        icon: 'rect',
+        icon: 'circle',
         width: 30,
         height: 350,
         padding: 0,
-        itemHeight: 20,
-        itemWidth: 20,
+        itemHeight: 16,
+        itemWidth: 16,
         selectedMode: false,
       },
       series: [
         {
           name: '标题',
           type: 'pie',
-          center: ['30%', '50%'],
+          center: ['40%', '50%'],
           radius: ['60%', '90%'],
           clockwise: false, //饼图的扇区是否是顺时针排布
           avoidLabelOverlap: false,

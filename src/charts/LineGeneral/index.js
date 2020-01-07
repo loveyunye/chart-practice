@@ -12,7 +12,7 @@ class LineBase {
     symbol: {
       symbolSize: 12,
       color: 'rgba(87, 239, 101, 1)',
-      shape: 'rect',
+      shape: 'circle',
     },
     splitLine: {
       color: 'rgba(87, 239, 101, 0.2)',
@@ -27,11 +27,11 @@ class LineBase {
     splitNumber: 3,
     xAxisLabel: {
       color: '#ddd',
-      fontSize: 20,
+      fontSize: 14,
     },
     yAxisLabel: {
       color: '#ddd',
-      fontSize: 20,
+      fontSize: 14,
     },
   };
   constructor(container, options) {
@@ -122,13 +122,13 @@ class LineBase {
             alignWithLabel: true,
             lineStyle: {
               color: '#bbb',
-              width: 2,
+              width: 1,
             },
           },
           axisLine: {
             lineStyle: {
               color: '#bbb',
-              width: 2,
+              width: 1,
             },
           },
           axisLabel: yAxisLabel,

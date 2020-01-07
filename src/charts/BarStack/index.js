@@ -21,9 +21,9 @@ class BarGeneral {
     legend: {
       left: 'center',
       bottom: '0%',
-      icon: 'rect',
-      itemHeight: 20,
-      itemWidth: 20,
+      icon: 'circle',
+      itemHeight: 16,
+      itemWidth: 16,
     },
     splitLine: {
       color: 'rgba(87, 239, 101, 0.2)',
@@ -31,14 +31,14 @@ class BarGeneral {
     },
     xAxisLabel: {
       color: '#ddd',
-      fontSize: 20,
+      fontSize: 16,
     },
     yAxisLabel: {
       color: '#ddd',
-      fontSize: 20,
+      fontSize: 16,
     },
-    barWidth: 40,
-    splitNumber: 3,
+    barWidth: 32,
+    splitNumber: 5,
     areaColors: [
       [{ offset: 0, color: '#0078FF' }],
       [{ offset: 0, color: '#F7643C' }],

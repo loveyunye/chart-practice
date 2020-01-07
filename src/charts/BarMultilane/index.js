@@ -148,15 +148,12 @@ class BarMultilane {
               position: 'top',
               color: '#fff',
               formatter(params) {
-                return `{a|${params.value}}${units[index]}`;
+                return `{a|${params.value}}`;
               },
               rich: {
                 a: {
                   lineHeight: 10,
                   fontSize: 16,
-                },
-                b: {
-                  fontSize: 10,
                 },
               },
             },
@@ -183,7 +180,6 @@ class BarMultilane {
 
   setData(data) {
     this.data = data;
-    console.log(data);
     this.setOptions();
   }
 

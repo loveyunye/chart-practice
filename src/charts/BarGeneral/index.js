@@ -20,14 +20,14 @@ class BarGeneral {
     },
     xAxisLabel: {
       color: '#ddd',
-      fontSize: 20,
+      fontSize: 16,
     },
     yAxisLabel: {
       color: '#ddd',
-      fontSize: 20,
+      fontSize: 16,
     },
-    barWidth: 40,
-    splitNumber: 3,
+    barWidth: 32,
+    splitNumber: 5,
   };
   constructor(container, options) {
     this.container = container;
