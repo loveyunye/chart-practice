@@ -1,15 +1,13 @@
-import Cookie from 'js-cookie';
-
 const ChartKey = 'chart-key';
 
 export function getKey() {
-  return Cookie.get(ChartKey);
+  return sessionStorage.getItem(ChartKey);
 }
 
 export function setKey(key) {
-  return Cookie.set(ChartKey, key);
+  return sessionStorage.setItem(ChartKey, key);
 }
 
 export function removeKey() {
-  return Cookie.remove(ChartKey);
+  sessionStorage.removeItem(ChartKey);
 }
