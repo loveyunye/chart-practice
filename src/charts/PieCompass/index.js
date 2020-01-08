@@ -24,8 +24,9 @@ class PieCompass {
     },
     text: {
       color: [
-        { offset: 0, color: '#62C232' },
-        { offset: 1, color: '#ffffff' },
+        { offset: 0, color: '#0078FF' },
+        { offset: 0.5, color: 'rgba(60, 230, 247, 1)' },
+        { offset: 1, color: '#62C232' },
       ],
       decimalPlaces: 0, // 小数位数
       fontSize: 50,
@@ -34,9 +35,16 @@ class PieCompass {
     arcConfig: {
       outerRadius: 100,
       innerRadius: 90,
-      cornerRadius: 0,
+      cornerRadius: 5,
       bgColor: '#626778',
       valueColor: '#00E8FF',
+    },
+    point: {
+      ballColor: 'rgba(60, 230, 247, 0.2)',
+      ballRadius: 8,
+      pointLength: 60,
+      pointWidth: 4,
+      pointColor: 'rgba(60, 230, 247, 1)',
     },
     animateTime: 2000,
   };
@@ -54,7 +62,7 @@ class PieCompass {
   addLine() {}
 
   drawPie() {
-    const { lineConfig, grid, text } = this.options;
+    const { lineConfig, grid, text, point } = this.options;
     const { clientWidth: width, clientHeight: height } = this.container;
     this.containerG = this.svg
       .append('g')
@@ -155,14 +163,47 @@ class PieCompass {
         }),
       )
       .attr('fill', arcConfig.bgColor);
+
+    // 绘制指针
+    this.containerG
+      .append('circle')
+      .attr('r', point.ballRadius)
+      .attr('cx', 0)
+      .attr('cy', 0)
+      .attr('fill', point.ballColor);
+    this.pointLine = this.containerG
+      .append('polygon')
+      .attr('points', () => {
+        const x = point.pointLength;
+        const y = point.pointWidth / 2;
+        return `0,${y} 0,${-y} ${x},0`;
+      })
+      .attr('fill', point.pointColor)
+      .attr('transform', 'rotate(-225)');
   }
 
   drawArc() {
     const { lineConfig, arcConfig, text, animateTime } = this.options;
     const _self = this;
+    // clip 圆环
     const arcClip = d3Arc()
       .outerRadius(this.radius)
       .innerRadius(this.radius - lineConfig.length);
+
+    // 指针
+    this.pointLine
+      .attr('transform', 'rotate(-225)')
+      .transition()
+      .duration(animateTime)
+      .attrTween('transform', () => {
+        return (t) => {
+          const scaleRotate = scaleLinear()
+            .domain([0, 1])
+            .range([0, this.data]);
+          return `rotate(${-225 + 270 * scaleRotate(t)})`;
+        };
+      });
+
     // 增加clip path
     this.containerG.select('.clip-path').remove();
     this.containerG
@@ -218,6 +259,7 @@ class PieCompass {
       .append('text')
       .attr('fill', `url(#${this.linearGradientID})`)
       .attr('font-size', text.fontSize)
+      .attr('dy', this.radius - text.fontSize)
       .style('text-anchor', 'middle')
       .style('dominant-baseline', 'middle')
       .style('font-weight', text.fontWight)

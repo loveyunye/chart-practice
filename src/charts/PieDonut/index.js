@@ -64,7 +64,7 @@ class PieDonut {
       .attr('r', arcBall.radius)
       .attr('stroke', arcBall.arcColor)
       .attr('stroke-width', 2)
-      .attr('stroke-dasharray', '5,5')
+      .attr('stroke-dasharray', '5 5')
       .attr('fill', 'none');
 
     // 绘制球
@@ -172,6 +172,7 @@ class PieDonut {
       .append('path')
       .style('fill', '#2EA9E6')
       .transition()
+      .ease(easeLinear)
       .duration(emptyTime)
       .attrTween('d', () => {
         const linearData = scaleLinear().range([
@@ -195,6 +196,7 @@ class PieDonut {
       .append('path')
       .style('fill', '#62C232')
       .transition()
+      .ease(easeLinear)
       .delay(emptyTime)
       .duration(valueTime)
       .attrTween('d', () => {
