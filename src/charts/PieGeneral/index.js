@@ -73,10 +73,10 @@ class BarGeneral {
                 value: {
                   color: '#ffffff',
                   lineHeight: 80,
-                  fontSize: 40,
+                  fontSize: 60,
                 },
                 name: {
-                  fontSize: 14,
+                  fontSize: 20,
                 },
               },
               textStyle: {
