@@ -22,8 +22,8 @@ export default {
     ...mapState('chart', [
       'chartClass',
       'config',
-      'defaultOptions',
-      'defaultData',
+      'currentOptions',
+      'currentData',
     ]),
     chartWrapper() {
       return {
@@ -36,7 +36,20 @@ export default {
     chartClass: {
       handler() {
         this.initChart();
-        this.setData(this.defaultData);
+        this.setData(this.currentData);
+      },
+      deep: true,
+    },
+    currentData: {
+      handler() {
+        this.setData(this.currentData);
+      },
+      deep: true,
+    },
+    currentOptions: {
+      handler() {
+        this.initChart();
+        this.setData(this.currentData);
       },
       deep: true,
     },
@@ -54,17 +67,19 @@ export default {
         chartElement.style.width = `${this.config.width}px`;
         this.$refs.chartParent.appendChild(chartElement);
         // 初始化
-        this.chart = new this.chartClass(chartElement, this.defaultOptions);
+        this.chart = new this.chartClass(chartElement, this.currentOptions);
         this.chart.initChart();
       }
     },
     setData(data) {
-      this.chart.setData(data);
+      if (this.chart) {
+        this.chart.setData(data);
+      }
     },
   },
   mounted() {
     this.initChart();
-    this.setData(this.defaultData);
+    this.setData(this.currentData);
   },
 };
 </script>

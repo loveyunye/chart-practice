@@ -4,11 +4,11 @@ import { select, scaleLinear, arc as d3Arc } from 'd3';
 class PieCompass {
   constructor(container, option = {}) {
     this.container = container;
-    this.options = deepMerge({}, PieCompass.defaultOption, option);
+    this.options = deepMerge({}, PieCompass.defaultOptions, option);
     this.svg = null;
   }
 
-  static defaultOption = {
+  static defaultOptions = {
     lineConfig: {
       number: 100,
       length: 16,
@@ -278,7 +278,7 @@ class PieCompass {
   }
 
   setData(data) {
-    this.data = data;
+    this.data = Number(data);
     this.drawArc();
   }
 }

@@ -4,11 +4,11 @@ import { deepMerge } from '../../utils';
 class PieDonut {
   constructor(container, option = {}) {
     this.container = container;
-    this.options = deepMerge({}, PieDonut.defaultOption, option);
+    this.options = deepMerge({}, PieDonut.defaultOptions, option);
     this.svg = null;
   }
 
-  static defaultOption = {
+  static defaultOptions = {
     grid: {
       top: 10,
       right: 10,
@@ -27,7 +27,7 @@ class PieDonut {
       ballColor: 'rgb(49, 150, 250, 0.8)',
       ballRadius: 8,
     },
-    animateTime: 2000,
+    animateTime: 1500,
     text: {
       color: [
         { offset: 0, color: '#62C232' },
@@ -248,7 +248,7 @@ class PieDonut {
   }
 
   setData(data) {
-    this.data = data;
+    this.data = Number(data);
     this.drawArc();
   }
 }

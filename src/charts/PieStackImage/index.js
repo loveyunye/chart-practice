@@ -3,7 +3,7 @@ import { deepMerge } from '../../utils';
 import MainPng from './studyStatus.png';
 
 class PieStackImage {
-  static defaultOption = {
+  static defaultOptions = {
     line: {
       color: '#42DEFF',
       width: 1,
@@ -17,7 +17,7 @@ class PieStackImage {
 
   constructor(container, option = {}) {
     this.container = container;
-    this.options = deepMerge({}, PieStackImage.defaultOption, option);
+    this.options = deepMerge({}, PieStackImage.defaultOptions, option);
     this.svg = null;
     this.labelLines = [
       {

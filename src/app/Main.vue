@@ -4,7 +4,7 @@
       <ChartWrapper :grid="gridStatus" />
     </div>
     <div class="panel">
-      <div class="config-panel">配置面板</div>
+      <ConfigPanel />
     </div>
     <div class="switch">
       <span>网格模式：</span>
@@ -15,6 +15,8 @@
 <script>
 import ChartWrapper from '../components/ChartWrapper';
 import SwitchInput from '../components/SwitchInput';
+import ConfigPanel from '../components/ConfigPanel';
+
 import { getGrid, setGrid, removeGrid } from '@/cookie/grid';
 
 export default {
@@ -22,6 +24,7 @@ export default {
   components: {
     ChartWrapper,
     SwitchInput,
+    ConfigPanel,
   },
   data() {
     return {
@@ -59,10 +62,6 @@ export default {
     margin-left: 60px;
     width: 360px;
     height: calc(100% - 40px);
-    background-color: #212844;
-    box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    padding: 20px;
   }
 }
 </style>

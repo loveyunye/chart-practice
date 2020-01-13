@@ -2,11 +2,11 @@ import { select, arc as d3Arc, pie, color } from 'd3';
 import { deepMerge } from '../../utils';
 
 class PiePercentage {
-  static defaultOption = {};
+  static defaultOptions = {};
 
   constructor(container, option = {}) {
     this.container = container;
-    this.option = deepMerge({}, PiePercentage.defaultOption, option);
+    this.option = deepMerge({}, PiePercentage.defaultOptions, option);
     this.svg = null;
   }
   setOptions() {
