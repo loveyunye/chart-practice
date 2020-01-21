@@ -5,6 +5,17 @@
 </template>
 <script>
 import { mapState } from 'vuex';
+
+// const deBounced = function(fn, context = null, delay = 30) {
+//   let timer = null;
+//   return function(...arg) {
+//     clearTimeout(timer);
+//     timer = setTimeout(() => {
+//       fn.apply(context, arg);
+//     }, delay);
+//   };
+// };
+
 export default {
   name: 'chart-wrapper',
   props: {
@@ -24,6 +35,7 @@ export default {
       'config',
       'currentOptions',
       'currentData',
+      'fromPanel',
     ]),
     chartWrapper() {
       return {
@@ -42,14 +54,18 @@ export default {
     },
     currentData: {
       handler() {
-        this.setData(this.currentData);
+        if (this.fromPanel) {
+          this.setData(this.currentData);
+        }
       },
       deep: true,
     },
     currentOptions: {
       handler() {
-        this.initChart();
-        this.setData(this.currentData);
+        if (this.fromPanel) {
+          this.initChart();
+          this.setData(this.currentData);
+        }
       },
       deep: true,
     },

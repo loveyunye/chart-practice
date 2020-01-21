@@ -85,7 +85,7 @@ export default {
     background-color: #212844;
     box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.2);
     padding: 10px;
-    &.config {
+    &.options {
       border-radius: 0 8px 8px 8px;
     }
     &.data {

@@ -11,10 +11,12 @@ const screen = {
     defaultData: null,
     currentData: null,
     key: '',
+    fromPanel: false,
   },
   mutations: {
     setCurrentChart(state, current) {
       state.chartClass = current.chart;
+      state.fromPanel = false;
       // 默认配置
       state.defaultOptions = cloneDeep(current.chart.defaultOptions || {});
       state.defaultData = cloneDeep(current.config.data);
@@ -30,12 +32,14 @@ const screen = {
     // 设置当前配置
     setCurrentOptions(state, current) {
       if (!isEqual(state.currentOptions, current)) {
+        state.fromPanel = true;
         state.currentOptions = cloneDeep(current);
       }
     },
     // 设置当前数据
     setCurrentData(state, current) {
       if (!isEqual(state.currentData, current)) {
+        state.fromPanel = true;
         state.currentData = cloneDeep(current);
       }
     },
