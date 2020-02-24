@@ -101,11 +101,10 @@ class BarProgressInclined {
       .append('polygon')
       .attr('points', (d, i) => {
         const num = d.value > 1 ? 1 : d.value < 0 ? 0 : d.value; // value 值不能大于 0 且不能小于 0
-        const { x1, y1, y2 } = lineLengths[i];
-        let { x2, x3 } = lineLengths[i];
-        x2 *= num;
-        x3 *= num;
-        return `${x1},${y1} ${x2},${y1} ${x3},${y2} ${x1},${y2}`;
+        const { x1, y1, y2, x2, x3 } = lineLengths[i];
+        const x2Sub = x2 * num;
+        const x3Sub = x2Sub - x2 + x3;
+        return `${x1},${y1} ${x2Sub},${y1} ${x3Sub},${y2} ${x1},${y2}`;
       })
       .attr('stroke', (d, i) => {
         const { stroke } =
