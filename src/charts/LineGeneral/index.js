@@ -24,7 +24,7 @@ class LineBase {
       fontSize: 20,
       fontWeight: 800,
     },
-    splitNumber: 3,
+    splitNumber: 5,
     xAxisLabel: {
       color: '#ddd',
       fontSize: 14,
