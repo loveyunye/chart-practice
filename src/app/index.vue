@@ -15,7 +15,7 @@
 import NavSide from './Nav';
 import Head from './Head';
 import Main from './Main';
-import MetroApi from '../api/http';
+// import MetroApi from '../api/http';
 
 export default {
   name: 'layout',
@@ -24,20 +24,7 @@ export default {
     Head,
     Main,
   },
-  mounted() {
-    MetroApi({
-      url: '/api/login',
-      method: 'post',
-      data: {
-        username: 'superAdmin',
-        password: '123456',
-      },
-    });
-    MetroApi({
-      url: '/api/user',
-      method: 'get',
-    });
-  },
+  mounted() {},
 };
 </script>
 <style lang="less" scoped>
