@@ -7,7 +7,7 @@ yarn install
 
 ### Compiles and hot-reloads for development
 ```
-const a = 123;
+yarn run server
 ```
 
 ### Compiles and minifies for production
