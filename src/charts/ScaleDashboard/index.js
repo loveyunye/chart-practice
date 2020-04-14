@@ -16,20 +16,6 @@ class PieCompass {
       min: 0,
       max: 100,
     },
-    axisWarn: {
-      width: 2,
-      fillColor: 'rgba(60, 230, 247, 1)',
-      warn: {
-        min: {
-          value: 20,
-          fillColor: '#FFCA0F',
-        },
-        max: {
-          value: 20,
-          fillColor: '#FF0000',
-        },
-      },
-    },
     dividingLine: {
       number: 6,
       length: 24,
@@ -105,14 +91,12 @@ class PieCompass {
       text,
       point,
       globalConfig,
-      axis,
       dividingLine,
       tickLine,
     } = this.options;
     const { clientWidth: width, clientHeight: height } = this.container;
     this.containerG.attr('transform', `translate(${width / 2}, ${height / 2})`);
 
-    console.log(globalConfig, axis, dividingLine, tickLine);
     // 半径
     let radius =
       width > height

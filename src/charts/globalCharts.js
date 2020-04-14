@@ -29,7 +29,6 @@ requireComponent.keys().forEach((path) => {
   /**
    * 处理icon
    */
-  console.log();
   let icon;
   const iconPath = requireIcons
     .keys()
