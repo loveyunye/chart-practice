@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      canvas {
+        /* border: 1px solid gray; */
+      }
+    </style>
+  </head>
+  <body>
+    
+    <h1>游戏 - 扫雷</h1>
+    <canvas id="canvas"></canvas>
+    <script>
+      const Canvas = document.getElementById('canvas');
+      class MineClearance {
+        static defaultOptions = {
+          row: 10, // 行
+          column: 10, // 列
+          bomb: 10, // 炸弹
+          radius: 10, // 炸弹半径
+          gap: 10, // 间隙
+          edge: 40, // 边长
+        };
+
+        constructor(canvas, options = {}) {
+          this.options = {
+            ...MineClearance.defaultOptions,
+            ...options,
+          };
+          this.canvas = canvas;
+          this.ctx = this.canvas.getContext('2d');
+          this.rects = null;
+          this.bomb = null;
+        }
+
+        init() {
+          const { row, column, edge, gap } = this.options;
+          this.canvas.width = `${row * (edge + gap) - gap}`;
+          this.canvas.height = `${column * (edge + gap) - gap}`;
+          this.generator();
+          this.drawRects();
+        }
+
+        // 生成雷
+        generator() {
+          const { row, column, bomb } = this.options;
+          const bombs = [];
+          for (let k = 0; k < bomb; k++) {
+            const { i, j } = this.randomBombs(bombs, row, column);
+            bombs.push({
+              i,
+              j,
+            });
+          }
+          this.bombs = bombs;
+        }
+
+        // 生成框
+        drawRects() {
+          const { row, column, edge, gap } = this.options;
+          this.rects = Array.from(new Array(row)).map(
+            (item) => new Array(column),
+          );
+          for (let i = 0; i < row; i++) {
+            for (let j = 0; j < column; j++) {
+              this.ctx.strokeRect(
+                i * (edge + gap),
+                j * (edge + gap),
+                edge,
+                edge,
+              );
+              this.rects[i][j] = {
+                x: i * (edge + gap),
+                j: j * (edge + gap),
+                bomb: false,
+                draw: false,
+                sign: false,
+                clear: false,
+              };
+              // 设置雷属性
+              if (this.bombs.some((item) => item.i === i && item.j === j)) {
+                this.rects[i][j].bomb = true;
+                continue;
+              }
+              let number = 0;
+              for (let q = -1; q < 2; q++) {
+                for (let w = -1; w < 2; w++) {
+                  if (
+                    i + q < 0 ||
+                    j + w < 0 ||
+                    i + q >= row ||
+                    j + w >= column ||
+                    (q === 0 && w === 0)
+                  ) {
+                    continue;
+                  }
+                  if (
+                    this.bombs.some(
+                      (item) => item.i === i + q && item.j === j + w,
+                    )
+                  ) {
+                    number++;
+                  }
+                }
+              }
+              this.rects[i][j].number = number;
+            }
+          }
+        }
+        // 随机获取一个雷
+        randomBombs(bombs, row, column) {
+          const i = Math.floor((1 - Math.random()) * row);
+          const j = Math.floor((1 - Math.random()) * column);
+          const has = bombs.some((item) => item.i === i && item.j === j);
+          if (has) {
+            return this.randomBombs(bombs, row, column);
+          }
+          return { i, j };
+        }
+
+        showBombs() {
+          const { edge, gap, radius } = this.options;
+          for (let k = 0; k < this.bombs.length; k++) {
+            this.showItem(this.bombs[k].i, this.bombs[k].j);
+          }
+        }
+
+        showNumbers() {
+          const { row, column, edge, gap } = this.options;
+          for (let i = 0; i < row; i++) {
+            for (let j = 0; j < column; j++) {
+              if (this.rects[i][j].bomb) {
+                continue;
+              }
+              this.showItem(i, j);
+            }
+          }
+        }
+
+        showItem(i, j) {
+          const { edge, gap, radius } = this.options;
+          const { number, bomb, draw } = this.rects[i][j];
+          if (bomb) {
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+            this.ctx.beginPath();
+            this.ctx.arc(
+              i * (edge + gap) + 0.5 * edge,
+              j * (edge + gap) + 0.5 * edge,
+              radius,
+              0,
+              Math.PI * 2,
+              true,
+            );
+            this.ctx.fill();
+          } else {
+            if (draw) {
+              return this.rects[i][j];
+            }
+            this.rects[i][j].draw = true;
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            this.ctx.fillRect(
+              i * (edge + gap),
+              j * (edge + gap),
+              edge,
+              edge,
+            );
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+            this.ctx.font = '30px serif';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(
+              number,
+              i * (edge + gap) + 0.5 * edge,
+              j * (edge + gap) + 0.5 * edge,
+            );
+          }
+          return this.rects[i][j];
+        }
+
+        // 清场0 
+        clearZero(i, j) {
+          const { row, column, edge, gap } = this.options;
+          const { number, clear, sign } = this.rects[i][j];
+          if (clear) {
+            return;
+          }
+          this.rects[i][j].clear = true;
+          for (let q = -1; q < 2; q++) {
+            for (let w = -1; w < 2; w++) {
+              if (
+                i + q < 0 ||
+                j + w < 0 ||
+                i + q >= row ||
+                j + w >= column ||
+                (q === 0 && w === 0)
+              ) {
+                continue;
+              }
+              const { number: nextNumber, sign } = this.rects[i + q][j + w]
+              if (sign === false) {
+                if (nextNumber === 0) {
+                  this.showItem(i + q, j + w);
+                  this.clearZero(i + q, j + w);
+                } else {
+                  this.showItem(i + q, j + w);
+                }
+              }
+            }
+          }
+
+        }
+
+        canvasClick() {
+          this.canvas.addEventListener('click', (event) => {
+            this.mouseEvent(event);
+          });
+          this.canvas.addEventListener('contextmenu', (event) => {
+            this.mouseEvent(event, false);
+            event.preventDefault();
+          });
+        }
+
+        mouseEvent(event, click = true) {
+          const { edge, gap } = this.options;
+          const { offsetX, offsetY } = event;
+          const i = Math.floor(offsetX / (edge + gap));
+          const j = Math.floor(offsetY / (edge + gap));
+          if (
+            offsetX > (i + 1) * edge + i * gap ||
+            offsetY > (j + 1) * edge + j * gap
+          ) {
+            return;
+          }
+          const { number, bomb, draw, sign } = this.rects[i][j];
+          if (draw) {
+            return;
+          }
+          console.log(sign);
+
+          if (click) {
+            if (sign) {
+              return;
+            }
+            const item = this.showItem(i, j);
+            if (bomb) {
+              this.showBombs();
+              game.showNumbers();
+              alert('游戏结束');
+              return;
+            }
+            if (number === 0) {
+              this.clearZero(i, j);
+            } else {
+              this.showItem(i, j);
+            }
+          } else {
+            if (sign) {
+              this.rects[i][j].sign = false;
+              this.ctx.clearRect(
+                i * (edge + gap) + edge / 3,
+                j * (edge + gap) + edge / 3,
+                edge / 3,
+                edge / 3,
+              );
+            } else {
+              this.rects[i][j].sign = true;
+              this.ctx.fillStyle = 'rgba(0, 0, 255, 0.8)';
+              this.ctx.fillRect(
+                i * (edge + gap) + edge / 3,
+                j * (edge + gap) + edge / 3,
+                edge / 3,
+                edge / 3,
+              );
+            }
+          }
+        }
+      }
+      const game = new MineClearance(Canvas);
+      game.init();
+      // game.showBombs();
+      // game.showNumbers();
+      game.canvasClick();
+    </script>
+  </body>
+</html>
