@@ -19,8 +19,8 @@
     const Canvas = document.getElementById('canvas');
     class MineClearance {
       static defaultOptions = {
-        row: 3, // 行
-        column: 3, // 列
+        row: 6, // 行
+        column: 6, // 列
         radius: 8, // 炸弹半径
         gap: 4, // 间隙
         edge: 30, // 边长
@@ -213,7 +213,7 @@
             this.turn('bottom');
             break;
         }
-        event.preventDefault();
+        // event.preventDefault();
       }
     }
     
