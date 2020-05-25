@@ -53,9 +53,9 @@
 
       // 初始化与重新开始
       init() {
-        const { row, column, edge, gap } = this.options;
-        this.canvas.width = `${row * (edge + gap) - gap}`;
-        this.canvas.height = `${column * (edge + gap) - gap}`;
+        const { column, row, edge, gap } = this.options;
+        this.canvas.width = `${column * (edge + gap) - gap}`;
+        this.canvas.height = `${row * (edge + gap) - gap}`;
         this.rectNumber = 0;
         this.signNumber = 0;
         this.generatorBombs();
@@ -65,10 +65,10 @@
 
       // 生成雷
       generatorBombs() {
-        const { row, column, bomb } = this.options;
+        const { column, row, bomb } = this.options;
         const bombs = [];
         for (let k = 0; k < bomb; k++) {
-          const { i, j } = this.randomBombs(bombs, row, column);
+          const { i, j } = this.randomBombs(bombs, column, row);
           bombs.push({
             i,
             j,
@@ -78,23 +78,23 @@
       }
 
       // 随机获取一个不重复的雷
-      randomBombs(bombs, row, column) {
-        const i = Math.floor((1 - Math.random()) * row);
-        const j = Math.floor((1 - Math.random()) * column);
+      randomBombs(bombs, column, row) {
+        const i = Math.floor((1 - Math.random()) * column);
+        const j = Math.floor((1 - Math.random()) * row);
         const has = bombs.some((item) => item.i === i && item.j === j);
         if (has) {
-          return this.randomBombs(bombs, row, column);
+          return this.randomBombs(bombs, column, row);
         }
         return { i, j };
       }
       // 生成框
       drawRects() {
-        const { row, column, edge, gap } = this.options;
-        this.rects = Array.from(new Array(row)).map(
-          (item) => new Array(column),
+        const { column, row, edge, gap } = this.options;
+        this.rects = Array.from(new Array(column)).map(
+          (item) => new Array(row),
         );
-        for (let i = 0; i < row; i++) {
-          for (let j = 0; j < column; j++) {
+        for (let i = 0; i < column; i++) {
+          for (let j = 0; j < row; j++) {
             this.ctx.strokeRect(
               i * (edge + gap),
               j * (edge + gap),
@@ -102,8 +102,6 @@
               edge,
             );
             this.rects[i][j] = {
-              x: i * (edge + gap),
-              j: j * (edge + gap),
               draw: false,
               sign: false,
               clear: false,
@@ -119,8 +117,8 @@
                 if (
                   i + q < 0 ||
                   j + w < 0 ||
-                  i + q >= row ||
-                  j + w >= column ||
+                  i + q >= column ||
+                  j + w >= row ||
                   (q === 0 && w === 0)
                 ) {
                   continue;
@@ -147,9 +145,9 @@
       }
 
       showNumbers() {
-        const { row, column, edge, gap } = this.options;
-        for (let i = 0; i < row; i++) {
-          for (let j = 0; j < column; j++) {
+        const { column, row, edge, gap } = this.options;
+        for (let i = 0; i < column; i++) {
+          for (let j = 0; j < row; j++) {
             if (this.rects[i][j].number === -1) {
               continue;
             }
@@ -248,8 +246,8 @@
       }
 
       judgeSuccess() {
-        const { row, column, bomb } = this.options;
-        return this.rectNumber === row * column - bomb;
+        const { column, row, bomb } = this.options;
+        return this.rectNumber === column * row - bomb;
       }
 
       signHandler(i, j, sign) {
@@ -259,15 +257,15 @@
 
       // 清除 number 0 附近  number 0 方块
       clearZero(i, j) {
-        const { row, column } = this.options;
+        const { column, row } = this.options;
         this.rects[i][j].clear = true;
         for (let q = -1; q < 2; q++) {
           for (let w = -1; w < 2; w++) {
             if (
               i + q < 0 ||
               j + w < 0 ||
-              i + q >= row ||
-              j + w >= column ||
+              i + q >= column ||
+              j + w >= row ||
               (q === 0 && w === 0)
             ) {
               continue;
