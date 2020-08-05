@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>测试</title>
+  </head>
+  <body>
+    <video id="video" width="320" height="240" autoplay></video>
+    <button id="snap">拍摄</button>
+    <div style="border: 1px solid red;">
+      <canvas id="canvas" width="320" height="240"></canvas>
+    </div>
+    <script>
+      var video = document.getElementById('video');
+      
+      //访问摄像头
+      if (
+        navigator.mediaDevices.getUserMedia ||
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia
+      ) {
+        //调用用户媒体设备, 访问摄像头
+        getUserMedia(
+          {
+            audio: true, video: { facingMode: { exact: "environment" } }
+          },
+          success,
+          error,
+        );
+      } else {
+        alert('不支持访问用户媒体');
+      }
+
+      //访问用户媒体设备的兼容方法
+      function getUserMedia(constraints, success, error) {
+        if (navigator.mediaDevices.getUserMedia) {
+          //最新的标准API
+          navigator.mediaDevices
+            .getUserMedia(constraints)
+            .then(success)
+            .catch(error);
+        } else if (navigator.webkitGetUserMedia) {
+          //webkit核心浏览器
+          navigator.webkitGetUserMedia(constraints, success, error);
+        } else if (navigator.mozGetUserMedia) {
+          //firfox浏览器
+          navigator.mozGetUserMedia(constraints, success, error);
+        } else if (navigator.getUserMedia) {
+          //旧版API
+          navigator.getUserMedia(constraints, success, error);
+        }
+      }
+
+      //成功回调
+      function success(stream) {
+        //兼容webkit核心浏览器
+        var CompatibleURL = window.URL || window.webkitURL;
+        //将视频流设置为video元素的源
+        // console.log(stream);
+        //video.src = CompatibleURL.createObjectURL(stream);
+        video.srcObject = stream;
+        video.play();
+      }
+
+      //失败回调
+      function error(error) {
+        console.log('访问用户媒体设备失败');
+      }
+
+      window.addEventListener(
+        'DOMContentLoaded',
+        function() {
+          var canvas = document.getElementById('canvas'), //调用canvas接口
+            context = canvas.getContext('2d'),
+            video = document.getElementById('video'),
+            videoObj = { video: true },
+            errBack = function(error) {
+              //错误处理
+              console.log('Video capture error: ', error.code);
+            };
+          if (navigator.getUserMedia) {
+            //调用html5拍摄接口
+            navigator.getUserMedia(
+              videoObj,
+              function(stream) {
+                video.src = stream; //摄像机属于视频流，所以当然要输出到html5的video标签中了
+                video.play(); //开始播放
+              },
+              errBack,
+            );
+          } else if (navigator.webkitGetUserMedia) {
+            //WebKit内核调用html5拍摄接口
+            navigator.webkitGetUserMedia(
+              videoObj,
+              function(stream) {
+                video.src = window.webkitURL.createObjectURL(stream); //同上
+                video.play(); //同上
+              },
+              errBack,
+            );
+          } else if (navigator.mozGetUserMedia) {
+            //moz内核调用html5拍摄接口
+            navigator.mozGetUserMedia(
+              videoObj,
+              function(stream) {
+                video.src = window.URL.createObjectURL(stream); //同上
+                video.play(); //同上
+              },
+              errBack,
+            );
+          }
+        },
+        false,
+      );
+
+      document.getElementById('snap').addEventListener('click', function() {
+        //获取拍照按钮绑定事件
+        var canvans = document.getElementById('canvas'), //调用canvas接口
+          context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, 640, 480); //调用canvas接口的drawImage方法绘制当前video标签中的静态图片，其实就是截图
+
+        var imgData = canvans.toDataURL(); //获取图片的base64格式的数据
+        console.log(imgData);
+
+        //这里就可以写上传服务器代码了
+      });
+    </script>
+  </body>
+</html>
