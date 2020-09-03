@@ -4,6 +4,7 @@ const screen = {
     chartsList: [],
     pure: false,
     grid: false,
+    rule: false,
   },
   mutations: {
     setChartList(state, res) {
@@ -14,6 +15,9 @@ const screen = {
     },
     setGrid(state, grid) {
       state.grid = grid;
+    },
+    setRule(state, rule) {
+      state.rule = rule;
     },
   },
   actions: {

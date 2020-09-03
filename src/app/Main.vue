@@ -1,18 +1,22 @@
 <template>
   <div class="main-wrapper">
     <div class="chart">
-      <ChartWrapper :grid="grid" />
+      <ChartWrapper :grid="grid" :rule="rule" />
     </div>
     <div class="panel" :class="pure ? 'pure' : ''">
       <ConfigPanel />
     </div>
     <div class="switch">
       <div class="switch-item">
-        <span>网格模式：</span>
+        <span>网格：</span>
         <SwitchInput :value="grid" @input="setGrid" />
       </div>
       <div class="switch-item">
-        <span>纯净模式：</span>
+        <span>标尺：</span>
+        <SwitchInput :value="rule" @input="setRule" />
+      </div>
+      <div class="switch-item">
+        <span>纯净：</span>
         <SwitchInput :value="pure" @input="setPure" />
       </div>
     </div>
@@ -33,10 +37,10 @@ export default {
     ConfigPanel,
   },
   computed: {
-    ...mapState('screen', ['pure', 'grid']),
+    ...mapState('screen', ['pure', 'grid', 'rule']),
   },
   methods: {
-    ...mapMutations('screen', ['setPure', 'setGrid']),
+    ...mapMutations('screen', ['setPure', 'setGrid', 'setRule']),
   },
 };
 </script>

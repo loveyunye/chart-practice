@@ -1,6 +1,23 @@
 <template>
   <div :class="chartWrapper">
     <div class="chart-wrapper-el" ref="chartParent"></div>
+    <div class="rule" v-if="rule">
+      <div class="origin">0</div>
+      <div
+        v-for="item in config.width / 100"
+        :key="item + 'top'"
+        :style="{ left: `${item * 100 - 6}px`, top: '-20px' }"
+      >
+        {{ item }}
+      </div>
+      <div
+        v-for="item in config.height / 100"
+        :key="item + 'left'"
+        :style="{ top: `${item * 100 - 6}px`, left: '-20px' }"
+      >
+        {{ item }}
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -10,6 +27,10 @@ export default {
   name: 'chart-wrapper',
   props: {
     grid: {
+      type: Boolean,
+      default: false,
+    },
+    rule: {
       type: Boolean,
       default: false,
     },
@@ -92,6 +113,25 @@ export default {
 <style lang="less" scoped>
 .chart-wrapper {
   display: inline-block;
+  position: relative;
+
+  .origin {
+    left: -20px;
+    top: -20px;
+  }
+
+  .rule {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    position: absolute;
+
+    & > div {
+      position: absolute;
+    }
+  }
+
   &.grid {
     background-image: linear-gradient(
         rgba(255, 255, 255, 0.2) 1px,

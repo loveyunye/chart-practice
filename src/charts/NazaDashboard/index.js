@@ -1,6 +1,5 @@
 import { deepMerge } from '../../utils';
 import { select, scaleLinear, arc as d3Arc } from 'd3';
-
 class PieCompass {
   constructor(container, options) {
     this.container = container;
@@ -378,7 +377,7 @@ class PieCompass {
 
   // 更新参数
   updateOptions(options) {
-    this.options = options;
+    this.options = deepMerge({}, this.options, options);
     this.paramsConversion();
     this.drawBase();
     this.drawAnimate();

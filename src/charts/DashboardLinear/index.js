@@ -396,7 +396,7 @@ class LinearDashboard {
 
   // 更新参数
   updateOptions(options) {
-    this.options = options;
+    this.options = deepMerge({}, this.options, options);
     this.paramsConversion();
     this.drawBase();
     this.drawAnimate();

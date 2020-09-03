@@ -309,7 +309,7 @@ class MapFlyLine {
   }
 
   updateOptions(options) {
-    this.options = options;
+    this.options = deepMerge({}, this.options, options);
     this.setAnimate();
   }
 
