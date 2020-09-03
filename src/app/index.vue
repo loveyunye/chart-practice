@@ -2,7 +2,7 @@
   <div class="layout-wrapper">
     <Head />
     <div class="body">
-      <div class="side">
+      <div class="side" :class="pure ? 'pure' : ''">
         <NavSide />
       </div>
       <div class="main">
@@ -15,7 +15,7 @@
 import NavSide from './Nav';
 import Head from './Head';
 import Main from './Main';
-// import MetroApi from '../api/http';
+import { mapState } from 'vuex';
 
 export default {
   name: 'layout',
@@ -24,7 +24,9 @@ export default {
     Head,
     Main,
   },
-  mounted() {},
+  computed: {
+    ...mapState('screen', ['pure']),
+  },
 };
 </script>
 <style lang="less" scoped>
@@ -42,28 +44,17 @@ export default {
     .side {
       width: 200px;
       height: 100%;
+      transition: all 0.2s;
+      &.pure {
+        width: 0;
+        overflow: hidden;
+        margin-left: 0;
+      }
     }
     .main {
       flex: 1;
       height: 100%;
       overflow-x: scroll;
-      &::-webkit-scrollbar {
-        /*滚动条整体样式*/
-        width: 2px; /*高宽分别对应横竖滚动条的尺寸*/
-        height: 2px;
-      }
-      &::-webkit-scrollbar-thumb {
-        /*滚动条里面小方块*/
-        border-radius: 1px;
-        // box-shadow: inset 0 0 5px rgba(0, 0, 0, 1);
-        background: #409eff;
-      }
-      &::-webkit-scrollbar-track {
-        /*滚动条里面轨道*/
-        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        border-radius: 10px;
-        background: rgba(0, 0, 0, 0);
-      }
     }
   }
 }

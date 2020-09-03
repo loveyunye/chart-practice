@@ -1,14 +1,20 @@
 <template>
   <div class="main-wrapper">
     <div class="chart">
-      <ChartWrapper :grid="gridStatus" />
+      <ChartWrapper :grid="grid" />
     </div>
-    <div class="panel">
+    <div class="panel" :class="pure ? 'pure' : ''">
       <ConfigPanel />
     </div>
     <div class="switch">
-      <span>网格模式：</span>
-      <SwitchInput v-model="gridStatus" />
+      <div class="switch-item">
+        <span>网格模式：</span>
+        <SwitchInput :value="grid" @input="setGrid" />
+      </div>
+      <div class="switch-item">
+        <span>纯净模式：</span>
+        <SwitchInput :value="pure" @input="setPure" />
+      </div>
     </div>
   </div>
 </template>
@@ -17,7 +23,7 @@ import ChartWrapper from '../components/ChartWrapper';
 import SwitchInput from '../components/SwitchInput';
 import ConfigPanel from '../components/ConfigPanel';
 
-import { getGrid, setGrid, removeGrid } from '@/cookie/grid';
+import { mapState, mapMutations } from 'vuex';
 
 export default {
   name: 'main-index',
@@ -26,15 +32,11 @@ export default {
     SwitchInput,
     ConfigPanel,
   },
-  data() {
-    return {
-      gridStatus: getGrid() ? true : false,
-    };
+  computed: {
+    ...mapState('screen', ['pure', 'grid']),
   },
-  watch: {
-    gridStatus(val) {
-      val ? setGrid('grid') : removeGrid();
-    },
+  methods: {
+    ...mapMutations('screen', ['setPure', 'setGrid']),
   },
 };
 </script>
@@ -43,6 +45,7 @@ export default {
   height: 100%;
   display: flex;
   position: relative;
+  overflow-x: scroll;
   align-items: center;
   padding: 0 20px;
   .switch {
@@ -52,6 +55,9 @@ export default {
     span {
       line-height: 3rem;
     }
+    .switch-item {
+      margin-bottom: 10px;
+    }
   }
   .chart {
     flex: 1;
@@ -60,8 +66,17 @@ export default {
   }
   .panel {
     margin-left: 60px;
+    min-width: 360px;
     width: 360px;
     height: calc(100% - 40px);
+    transition: all 0.2s;
+
+    &.pure {
+      width: 0;
+      min-width: 0;
+      overflow: hidden;
+      margin-left: 0;
+    }
   }
 }
 </style>

@@ -6,16 +6,6 @@
 <script>
 import { mapState } from 'vuex';
 
-// const deBounced = function(fn, context = null, delay = 30) {
-//   let timer = null;
-//   return function(...arg) {
-//     clearTimeout(timer);
-//     timer = setTimeout(() => {
-//       fn.apply(context, arg);
-//     }, delay);
-//   };
-// };
-
 export default {
   name: 'chart-wrapper',
   props: {
