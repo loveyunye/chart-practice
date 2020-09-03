@@ -49,7 +49,7 @@ class BarMultilane {
     },
   };
 
-  setOptions() {
+  updateOptions() {
     const {
       xAxisLabel,
       yAxisLabel,
@@ -180,7 +180,7 @@ class BarMultilane {
 
   setData(data) {
     this.data = data;
-    this.setOptions();
+    this.updateOptions();
   }
 
   initChart() {

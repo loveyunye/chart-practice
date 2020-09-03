@@ -27,7 +27,7 @@ class RadarGeneral {
     this.options = deepMerge({}, RadarGeneral.defaultOptions, options);
   }
 
-  setOptions() {
+  updateOptions() {
     const { areaStyle, axisLine, nameStyle } = this.options;
 
     const { splitNum, maxAreaOpacity, minAreaOpacity } = areaStyle;
@@ -106,7 +106,7 @@ class RadarGeneral {
 
   setData(data) {
     this.data = data;
-    this.setOptions();
+    this.updateOptions();
   }
 
   initChart() {

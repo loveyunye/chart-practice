@@ -308,14 +308,14 @@ class MapFlyLine {
     });
   }
 
-  setOptions(options) {
+  updateOptions(options) {
     this.options = options;
     this.setAnimate();
   }
 
   setData(data) {
     this.data = data;
-    this.setOptions(this.options);
+    this.updateOptions(this.options);
   }
 
   createMap() {

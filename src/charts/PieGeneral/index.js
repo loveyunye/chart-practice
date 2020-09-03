@@ -17,7 +17,7 @@ class BarGeneral {
     }
   }
 
-  setOptions() {
+  updateOptions() {
     const { itemColors, showType } = this.options;
     const sum = this.sum;
     this.data.forEach((item, index) => {
@@ -98,7 +98,7 @@ class BarGeneral {
   setData(data) {
     this.data = data;
     this.sum = this.data.map((item) => item.value).reduce((a, b) => a + b);
-    this.setOptions();
+    this.updateOptions();
   }
 
   destroy() {

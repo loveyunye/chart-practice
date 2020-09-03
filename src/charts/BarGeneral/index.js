@@ -39,7 +39,7 @@ class BarGeneral {
     }
   }
 
-  setOptions() {
+  updateOptions() {
     const {
       areaColors,
       splitLine,
@@ -115,7 +115,7 @@ class BarGeneral {
 
   setData(data) {
     this.data = data;
-    this.setOptions();
+    this.updateOptions();
   }
 
   destroy() {

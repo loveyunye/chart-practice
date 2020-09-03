@@ -9,7 +9,7 @@ class PiePercentage {
     this.option = deepMerge({}, PiePercentage.defaultOptions, option);
     this.svg = null;
   }
-  setOptions() {
+  updateOptions() {
     const arc = d3Arc()
       .innerRadius(120)
       .outerRadius(60)
@@ -49,7 +49,7 @@ class PiePercentage {
     //   .attr('fill', 'none');
   }
   setData() {
-    this.setOptions();
+    this.updateOptions();
   }
   initChart() {
     const { clientWidth, clientHeight } = this.container;

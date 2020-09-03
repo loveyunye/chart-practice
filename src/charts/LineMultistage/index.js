@@ -42,7 +42,7 @@ class LineMultistage {
     }
   }
 
-  setOptions() {
+  updateOptions() {
     const {
       smooth,
       symbol,
@@ -240,7 +240,7 @@ class LineMultistage {
 
   setData(data) {
     this.data = data;
-    this.setOptions();
+    this.updateOptions();
   }
 
   destroy() {

@@ -103,25 +103,6 @@ export default {
     background-size: 10px 10px, 10px 10px, 50px 50px, 50px 50px;
     background-position: -0.5px -0.5px, -0.5px -0.5px, -1px -1px, -1px -1px;
     position: relative;
-    // &:before {
-    //   position: absolute;
-    //   content: ' ';
-    //   width: 2px;
-    //   height: 100%;
-    //   top: 0;
-    //   left: 50px;
-    //   background-color: rgba(255, 255, 255, 0.3);
-    // }
-
-    // &:after {
-    //   position: absolute;
-    //   content: ' ';
-    //   width: 100%;
-    //   height: 2px;
-    //   top: 50px;
-    //   left: 0;
-    //   background-color: rgba(255, 255, 255, 0.3);
-    // }
   }
 }
 </style>

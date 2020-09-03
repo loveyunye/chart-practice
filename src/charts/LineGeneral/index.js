@@ -44,7 +44,7 @@ class LineBase {
     }
   }
 
-  setOptions() {
+  updateOptions() {
     const {
       areaColors,
       smooth,
@@ -170,7 +170,7 @@ class LineBase {
 
   setData(data) {
     this.data = data;
-    this.setOptions();
+    this.updateOptions();
   }
 
   destroy() {

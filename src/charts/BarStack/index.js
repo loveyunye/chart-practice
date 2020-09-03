@@ -55,7 +55,7 @@ class BarGeneral {
     }
   }
 
-  setOptions() {
+  updateOptions() {
     const {
       legend,
       areaColors,
@@ -150,7 +150,7 @@ class BarGeneral {
 
   setData(data) {
     this.data = data;
-    this.setOptions();
+    this.updateOptions();
   }
 
   destroy() {
