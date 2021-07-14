@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css" />
+  <script src="https://webapi.amap.com/maps?v=2.0&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.GeoJSON"></script>
+  <!-- <script src="https://webapi.amap.com/maps?v=2.0&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.Map3D"></script> -->
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+</head>
+
+<body>
+  <div id="container"></div>
+
+  <script>
+    var map = new AMap.Map('container', {
+      viewMode: '3D',
+      showBuildingBlock: false,
+      center: [116.472605, 39.992075],
+      pitch: 55,
+      zoom: 17,
+      mapStyle: 'amap://styles/be91f0ee35cf36a2150890e2ff3beb55',
+    });
+    // ajax('/json/Export_Output_13.json', function (err, geoJSON) {
+    ajax('/json/shanghai.json', function (err, geoJSON) {
+    // ajax('https://a.amap.com/Loca/static/loca-v2/demos/mock_data/sh_building_center.json', function (err, geoJSON) {
+      if (!err) {
+        var geojson = new AMap.GeoJSON({
+          geoJSON: geoJSON,
+          getPolygon: function (geojson, lnglats) {
+            // 计算面积
+            var area = AMap.GeometryUtil.ringArea(lnglats[0])
+
+            return new AMap.Polygon({
+              path: lnglats,
+              fillOpacity: 1 - Math.sqrt(area / 8000000000),// 面积越大透明度越高
+              strokeColor: 'white',
+              fillColor: 'red'
+            });
+          }
+        });
+        map.add(geojson);
+        log.success('GeoJSON 数据加载完成')
+      } else {
+        log.error('GeoJSON 服务请求失败')
+      }
+      map.setFitView()
+    })
+  </script>
+</body>
+
+</html>

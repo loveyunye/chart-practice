@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <style>
+    html,
+    body,
+    #container {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <title>GeoJSON</title>
+  <link rel="stylesheet" href="//a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+  <script src="https://webapi.amap.com/maps?v=2.0&key=8cf19d091af642031d99a44b3e607c6c&plugin=AMap.GeoJSON"></script>
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+</head>
+
+<body>
+  <div id="container"></div>
+  <script type="text/javascript">
+    var map = new AMap.Map('container', {
+      center: [115.86401, 28.514145],
+      zoom: 14
+    });
+
+    ajax('https://a.amap.com/jsapi_demos/static/geojson/chongqing.json', function (err, geoJSON2) {
+      const geoJSON = {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [
+                  115.87467805401636,
+                  28.502552058965122
+                ],
+                [
+                  115.87448769713589,
+                  28.50057234740827
+                ],
+                [
+                  115.87494455364902,
+                  28.498383243282905
+                ],
+                [
+                  115.87825676336912,
+                  28.492196644667747
+                ]
+              ]
+            },
+            "properties": {
+              "Id": 0,
+              "name": "东山路"
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [
+                  115.87932803070626,
+                  28.494819014649973
+                ],
+                [
+                  115.88045949840684,
+                  28.495594514984074
+                ],
+                [
+                  115.88274786004844,
+                  28.49612846603378
+                ]
+              ]
+            },
+            "properties": {
+              "Id": 0,
+              "name": ""
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [
+                  115.87932803070626,
+                  28.494819014649973
+                ],
+                [
+                  115.87744648891206,
+                  28.49312816965923
+                ],
+                [
+                  115.87625145561033,
+                  28.492072980680042
+                ],
+                [
+                  115.87430634821496,
+                  28.491615308351722
+                ],
+                [
+                  115.8674285501699,
+                  28.491640734592185
+                ]
+              ]
+            },
+            "properties": {
+              "Id": 0,
+              "name": "东岸路"
+            }
+          }
+        ]
+      }
+      if (!err) {
+        var geojson = new AMap.GeoJSON({
+          geoJSON: geoJSON,
+          // 还可以自定义getMarker和getPolyline
+          getPolyline: function (geojson, lnglats) {
+            // 计算面积
+            // var area = AMap.GeometryUtil.ringArea(lnglats[0])
+
+            const polyline = new AMap.Polyline({
+              path: lnglats,
+              // fillOpacity: 1 - Math.sqrt(area / 8000000000),// 面积越大透明度越高
+              // strokeColor: 'white',
+              strokeColor: 'red',
+              strokeWeight: 2
+            });
+
+            polyline.on('mouseover', function (data) {
+              console.log(data)
+            })
+
+            return polyline
+
+          }
+        });
+        map.add(geojson);
+        log.success('GeoJSON 数据加载完成')
+      } else {
+        log.error('GeoJSON 服务请求失败')
+      }
+      map.setFitView()
+
+    })
+  </script>
+</body>
+
+</html>
