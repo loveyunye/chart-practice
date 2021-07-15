@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <canvas id="ID" width="80" height="100"></canvas>
+  <script>
+     window.requestAnimFrame = (function () {
+        return window.requestAnimationFrame ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame ||
+          function (callback) {
+            window.setTimeout(callback, 1000 / 60);
+          };
+      })();
+      const dots = [];
+      (function () {
+        const canvas = document.getElementById('ID');
+        const ctx = canvas.getContext('2d');
+        const time = 1;
+        const num = 7;
+        function dot(x, y, vy) {
+          this.size = Math.ceil(Math.random() * 2 + 1);
+          this.x = x > canvas.width ? x - this.size : x < this.size ? x + this.size : x;
+          console.log(this.x, this.size)
+          this.y = y;
+          this.vy = vy;
+          this.ctx = {};
+          this.color = ['#FF9021', '#01AAF5', '#01AAF5', '#4AC767', '#FF67A0', '#AF4C00'][Math.floor(6 * Math.random())];
+        }
+        dot.prototype.render = function (ctx) {
+          ctx.save();
+          this.ctx = ctx;
+          this.ctx.beginPath();
+          this.ctx.fillStyle = this.color;
+          this.ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          this.ctx.closePath();
+          this.ctx.fill();
+          ctx.restore();
+        };
+        dot.prototype.update = function () {
+          this.y = this.y < 0 ?  canvas.height : (this.y + this.vy * time);
+          this.render(this.ctx);
+        };
+
+        for (let i = 0; i < num; i++) {
+          const x = Math.ceil(Math.random() * canvas.width);
+          const y = Math.ceil(Math.random() * canvas.height);
+          const vy = -Math.ceil(Math.random() * 2);
+          const d = new dot(x, y, vy);
+          d.render(ctx);
+          dots.push(d);
+        }
+        window.requestAnimFrame(anim);
+        function anim() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (let i = 0; i < dots.length; i++) {
+            dots[i].update();
+          }
+          window.requestAnimFrame(anim);
+        }
+      }());
+  </script>
+</body>
+</html>

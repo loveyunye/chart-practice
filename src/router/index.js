@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Layout from '../app/index.vue';
+import mapDot from '../views/mapDot';
 
 Vue.use(VueRouter);
 
@@ -9,6 +10,11 @@ const routes = [
     path: '/',
     name: 'home',
     component: Layout,
+  },
+  {
+    path: '/mapDot',
+    name: 'mapDot',
+    component: mapDot,
   },
 ];
 
