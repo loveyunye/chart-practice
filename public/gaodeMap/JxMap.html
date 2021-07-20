@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> 江西省 </title>
+  <style>
+    html,
+    body,
+    #map {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <script src="https://webapi.amap.com/maps?v=2.0&key=1a12cb8b82f149ad8b3eaa51d1614802"></script>
+  <script src="https://webapi.amap.com/loca?v=2.0.0&key=1a12cb8b82f149ad8b3eaa51d1614802"></script>
+  <script src="https://webapi.amap.com/maps?v=2.0&key=1a12cb8b82f149ad8b3eaa51d1614802&plugin=AMap.GeoJSON"></script>
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <script>
+    var map = new AMap.Map('map', {
+      zoom: 7.5,
+      viewMode: '3D',
+      pitch: 45,
+      mapStyle: 'amap://styles/da888b66f9d907b2aa722d05060a68d5',
+      center: [115.892151, 28.676493],
+      showBuildingBlock: false,
+      showLabel: false,
+    });
+
+    var loca = window.loca = new Loca.Container({
+      map,
+    });
+
+    // 光源
+    loca.ambLight = {
+      intensity: 0.3,
+      color: '#fff',
+    };
+    loca.dirLight = {
+      intensity: 0.6,
+      color: '#fff',
+      target: [0, 0, 0],
+      position: [0, -1, 1],
+    };
+    loca.pointLight = {
+      color: 'rgb(100,100,100)',
+      position: [120.24289, 30.341335, 20000],
+      intensity: 3,
+      // 距离表示从光源到光照强度为 0 的位置，0 就是光不会消失。
+      distance: 50000,
+    };
+    var geo = new Loca.GeoJSONSource({
+      url: '/json/jx_geojson.json',
+    });
+
+    var colors = ["#0887FF", "#0AB6FF", "#09D9FF", "#00FFE4", "#0AFFA4", "#00FF76", "#00E349", "#2BFE2B", "#32FE00", "#65FF04", "#D1FF19"];
+    var height = [1000, 2000, 5000, 6000, 8000, 10000, 12000, 14000, 16000, 14000, 16000, 14000];
+    var pl = new Loca.PolygonLayer({
+      // loca,
+      zIndex: 120,
+      opacity: 0.7,
+      // cullface: 'none',
+      shininess: 10,
+      hasSide: true,
+    });
+    const values = Array.from(new Array(11)).map(() => Math.random())
+
+    let geoJSON
+    let globalPl
+    ajax('/json/jx_geojson.json', function (err, data) {
+      data.features.forEach((i) => {
+        i.geometry.type = 'LineString'
+        i.geometry.coordinates = i.geometry.coordinates[0]
+        return i
+      })
+      geoJSON = data
+      globalPl =  addPl2();
+    })
+    let listPl = []
+    function addPl2(altitude = 16001) {
+      const geoLine = new Loca.GeoJSONSource({
+        data: geoJSON
+      });
+      const pl2 = new Loca.LineLayer({
+        zIndex: 230,
+        shininess: 10,
+        hasSide: true,
+      });
+      pl2.setSource(geoLine)
+      pl2.setStyle({
+        color: 'rgba(255, 255, 255, 0.5)',
+        lineWidth: 2,
+        altitude,
+        opacity: 0.5,
+      })
+      listPl.push(pl2);
+      loca.add(pl2);
+      return pl2
+    }
+
+    pl.setSource(geo);
+    pl.setStyle({
+      topColor: function (index, feature) {
+        const centerText = new AMap.Text({
+          text: '纯文本标记',
+          anchor: 'center', // 设置文本标记锚点
+          draggable: true,
+          cursor: 'pointer',
+          angle: 0,
+          visible: true,
+          offset: [0, 0],
+          style: {
+            'padding': '2px 2px',
+            'margin-bottom': '1rem',
+            'border-radius': '.25rem',
+            'background-color': 'rgba(0,0,0,0.5)',
+            // 'width': '12rem',
+            'border-width': 0,
+            'box-shadow': '0 2px 6px 0 rgba(255, 255, 255, .3)',
+            'text-align': 'center',
+            'font-size': '12px',
+            'color': '#fff',
+          },
+          text: feature.properties.name,
+          position: feature.properties.center,
+        });
+        centerText.setMap(map);
+        // return colors[index];
+        return '#09D9FF';
+      },
+      sideColor: function (index, feature) {
+        // return colors[index];
+        return '#0887FF';
+      },
+      height: function (index, feature) {
+        var v = values[index] * 100;
+        return 16000;
+      },
+      strokeWeight: 200,
+      strokeStyle: '#fff',
+      color: '#fff',
+      altitude: 0,
+    });
+    loca.add(pl);
+    map.on('click', (e) => {
+      var feat = pl.queryFeature(e.pixel.toArray());
+      if (feat) {
+        listPl.forEach(i => {
+            i.destroy()
+            loca.remove(i)
+          })
+          listPl = []
+        pl.addAnimate({
+          key: 'height',
+          value: [1, 2],
+          duration: 1000,
+          easing: 'CubicInOut',
+        }, function () {
+          addPl2(16001 * 2)
+          // globalPl.setStyle({
+          //   color: '#fff',
+          //   lineWidth: 2,
+          //   altitude: 16001 * 2,
+          // })
+        });
+        
+        pl.setStyle({
+          topColor: (index, feature) => {
+            if (feature === feat) {
+              return '#0887FF';
+            }
+            return '#09D9FF';
+          },
+          sideColor: (index, feature) => {
+            if (feature === feat) {
+              return [164, 241, 199, 0.5];
+            }
+            return '#0887FF';
+          },
+          height: function (index, feature) {
+            var v = values[index] * 100;
+            return 16000;
+          },
+        });
+      }
+    })
+  </script>
+</body>
+
+</html>

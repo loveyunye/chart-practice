@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> 上海东方明珠区域环视 </title>
+  <style>
+    html,
+    body,
+    #map {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .start-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      padding: 0 18px;
+      height: 30px;
+      background-color: #1A66FF;
+      border-radius: 5px;
+      z-index: 1;
+      cursor: pointer;
+    }
+
+    .start-btn>a {
+      color: #fff;
+      display: block;
+      height: 100%;
+      line-height: 30px;
+      text-align: center;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <div class="start-btn">
+        <a>开始镜头动画</a>
+    </div> -->
+
+  <div id="map"></div>
+  <script src="https://webapi.amap.com/maps?v=2.0&key=1a12cb8b82f149ad8b3eaa51d1614802"></script>
+  <script src="https://webapi.amap.com/loca?v=2.0.0&key=1a12cb8b82f149ad8b3eaa51d1614802"></script>
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <script>
+    var map = new AMap.Map('map', {
+      viewMode: '3D',
+      zoom: 11.8,
+      center: [116.980637, 28.826896],
+      // center: [121.48528129867138, 31.239196235398516],
+      // center: [112.8647917147342, 22.595982877835063],
+      mapStyle: 'amap://styles/da888b66f9d907b2aa722d05060a68d5',
+      showBuildingBlock: false,
+      showLabel: false,
+      pitch: 55,
+      zoom: 17,
+    });
+
+
+    var loca = window.loca = new Loca.Container({
+      map,
+    });
+
+    loca.ambLight = {
+      intensity: 2.2,
+      color: '#babedc',
+    };
+    loca.dirLight = {
+      intensity: 0.46,
+      color: '#d4d4d4',
+      target: [0, 0, 0],
+      position: [0, -1, 1],
+    };
+    loca.pointLight = {
+      color: 'rgb(15,19,40)',
+      position: [121.5043258, 31.2392241, 2600],
+      intensity: 25,
+      // 距离表示从光源到光照强度为 0 的位置，0 就是光不会消失。
+      distance: 3900,
+    };
+
+    ajax('http://192.168.41.101:8081/json/fengchaoyuanqu.json', function (err, data) {
+
+      const geoJson = {
+        "type": "FeatureCollection",
+        "features": data.regionPoint.map((i) => {
+          return {
+            "type": "Feature",
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                i.region.map((lngLat) => [lngLat.longitude, lngLat.latitude])
+              ]
+            },
+            properties: i.properties
+          }
+        })
+      }
+
+      // addPl2()
+      function addPl2() {
+        const geoLine = new Loca.GeoJSONSource({
+          data: geoJson
+        });
+        var pl2 = new Loca.PolygonLayer({
+          // loca,
+          zIndex: 120,
+          opacity: 0.7,
+          shininess: 10,
+          hasSide: true,
+        });
+        pl2.setSource(geoLine)
+        pl2.setStyle({
+          topColor: (index, feature) => {
+            return '#ffffff';
+          },
+          sideColor: (index, feature) => {
+            return '#0887FF';
+          },
+          height: function (index, feature) {
+            return feature.properties.h
+          },
+        });
+        loca.add(pl2);
+      }
+
+      var geo = new Loca.GeoJSONSource({
+        // url: 'https://a.amap.com/Loca/static/loca-v2/demos/mock_data/sh_building_center.json',
+        // url: '/json/shanghai.json',
+        url: '/json/config.json',
+
+        // url: '/json/Export_Output_13.json',
+        // data: geoJson
+      });
+
+      var pl = window.pl = new Loca.PolygonLayer({
+        zIndex: 120,
+        shininess: 1,
+        hasSide: true,
+        cullface: 'none',
+        // opacity: 0.7,
+        depth: true,
+      });
+
+      pl.setSource(geo);
+      pl.setStyle({
+        topColor: '#09D9FF',
+        height: function (index, feature) {
+          return feature.properties.h;
+        },
+        sideColor: '#0887FF',
+        bottomColor: '#0887FF',
+        textureSize: [1000, 820],
+        // texture: 'https://a.amap.com/Loca/static/loca-v2/demos/images/windows.jpg',
+        // texture: '/imgs/bg.png',
+      });
+      pl.setLoca(loca);
+
+      var dat = new Loca.Dat();
+      dat.addLight(loca.ambLight, loca, '环境光');
+      dat.addLight(loca.dirLight, loca, '平行光');
+      dat.addLight(loca.pointLight, loca, '点光');
+      dat.addLayer(pl, '楼块');
+
+    })
+
+
+
+
+
+  </script>
+</body>
+
+</html>
