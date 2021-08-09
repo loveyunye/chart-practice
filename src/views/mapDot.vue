@@ -57,11 +57,9 @@ export default {
   },
   methods: {
     handler(confirm) {
-      console.log(this.lngSelf, this.latSelf, this.companyAddress);
       if (confirm) {
         this.$emit('change', this.lngSelf, this.latSelf, this.companyAddress);
       }
-      // this.$emit('close', false);
     },
     loadMap() {
       return new Promise((resolve) => {

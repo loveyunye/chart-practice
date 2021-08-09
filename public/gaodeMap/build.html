@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css" />
+  <script src="https://webapi.amap.com/maps?v=2.0&key=1a12cb8b82f149ad8b3eaa51d1614802&plugin=AMap.GeoJSON"></script>
+  <!-- <script src="https://webapi.amap.com/maps?v=2.0&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.Map3D"></script> -->
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <script src="https://npmcdn.com/@turf/turf@6.5.0/turf.min.js"></script>
+</head>
+
+<body>
+  <div id="container"></div>
+
+  <script>
+    var map = new AMap.Map('container', {
+      viewMode: '3D',
+      showBuildingBlock: true,
+      center: [115.86439387001712,28.498785163095306],
+      pitch: 55,
+      zoom: 17,
+      mapStyle: 'amap://styles/da888b66f9d907b2aa722d05060a68d5',
+    });
+    // ajax('/json/Export_Output_13.json', function (err, geoJSON) {
+    ajax('/json/build.json', function (err, geoJSON) {
+      
+      if (!err) {
+        var geojson = new AMap.GeoJSON({
+          geoJSON: geoJSON,
+          getPolygon: function (geojson, lnglats) {
+            var features = turf.points(geojson.geometry.coordinates[0]);
+            var center = turf.center(features);
+
+            const centerText = new AMap.Text({
+              anchor: 'center', // 设置文本标记锚点
+              cursor: 'pointer',
+              angle: 0,
+              visible: true,
+              offset: [0, 0],
+              style: {
+                'padding': '2px 2px',
+                'margin-bottom': '1rem',
+                'border-radius': '.25rem',
+                'background-color': 'rgba(0,0,0,0.5)',
+                // 'width': '12rem',
+                'border-width': 0,
+                'box-shadow': '0 2px 6px 0 rgba(255, 255, 255, .3)',
+                'text-align': 'center',
+                'font-size': '12px',
+                'color': '#fff',
+              },
+              text: geojson.properties.name,
+              position: center.geometry.coordinates,
+            });
+            centerText.setMap(map);
+            const areaText = new AMap.Text({
+              anchor: 'center', // 设置文本标记锚点
+              cursor: 'pointer',
+              angle: 0,
+              visible: true,
+              offset: [20, 20],
+              style: {
+                'padding': '2px 2px',
+                'margin-bottom': '1rem',
+                'border-radius': '.25rem',
+                'background-color': 'rgba(0,0,0,0)',
+                // 'width': '12rem',
+                'border-width': 0,
+                // 'box-shadow': '0 2px 6px 0 rgba(255, 255, 255, .3)',
+                'text-align': 'center',
+                'font-size': '12px',
+                'color': '#fff',
+              },
+              text: '建筑面积' + (geojson.properties.qq).toFixed(2) + 'm²',
+              position: center.geometry.coordinates,
+            });
+            areaText.setMap(map);
+
+            // 计算面积
+            var area = AMap.GeometryUtil.ringArea(lnglats[0])
+            console.log(area)
+
+            const polygon = new AMap.Polygon({
+              path: lnglats,
+              fillOpacity: 1 - Math.sqrt(area / 8000000000),// 面积越大透明度越高
+              strokeColor: 'white',
+              fillColor: '#0887FF'
+            });
+            polygon.on('click', function(){
+              polygon.setOpacity(0.8)
+            })
+            return polygon;
+          }
+        });
+        map.add(geojson);
+        log.success('GeoJSON 数据加载完成')
+      } else {
+        log.error('GeoJSON 服务请求失败')
+      }
+      map.setFitView()
+    })
+  </script>
+</body>
+
+</html>

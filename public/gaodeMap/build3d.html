@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> build3d </title>
+  <style>
+    html,
+    body,
+    #map {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <div class="start-btn">
+        <a>开始镜头动画</a>
+    </div> -->
+
+  <div id="map"></div>
+  <script src="https://webapi.amap.com/maps?v=2.0&key=1a12cb8b82f149ad8b3eaa51d1614802"></script>
+  <script src="https://webapi.amap.com/loca?v=2.0.0&key=1a12cb8b82f149ad8b3eaa51d1614802"></script>
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <script src="https://npmcdn.com/@turf/turf@6.5.0/turf.min.js"></script>
+
+  <script>
+    var map = new AMap.Map('map', {
+      viewMode: '3D',
+      zoom: 17,
+      center: [115.86439387001712,
+        28.498785163095306],
+      mapStyle: 'amap://styles/da888b66f9d907b2aa722d05060a68d5',
+      showBuildingBlock: false,
+      showLabel: false,
+      pitch: 55,
+      zoom: 17,
+    });
+
+
+    var loca = window.loca = new Loca.Container({
+      map,
+    });
+
+    loca.ambLight = {
+      intensity: 2.2,
+      color: '#babedc',
+    };
+    loca.dirLight = {
+      intensity: 0.46,
+      color: '#d4d4d4',
+      target: [0, 0, 0],
+      position: [0, -1, 1],
+    };
+    loca.pointLight = {
+      color: 'rgb(15,19,40)',
+      position: [121.5043258, 31.2392241, 2600],
+      intensity: 25,
+      // 距离表示从光源到光照强度为 0 的位置，0 就是光不会消失。
+      distance: 3900,
+    };
+
+    ajax('/json/build.json', function (err, data) {
+      console.log(data)
+      data.features.forEach((i) => {
+        i.properties.h = '20'
+      })
+      var geo = new Loca.GeoJSONSource({
+        data,
+      });
+      console.log(data)
+
+      var pl = window.pl = new Loca.PolygonLayer({
+        zIndex: 120,
+        shininess: 1,
+        hasSide: true,
+        cullface: 'none',
+        depth: true,
+      });
+
+      pl.setSource(geo);
+      pl.setStyle({
+        topColor: '#09D9FF',
+        height: function (index, feature) {
+          // var features = turf.points(feature.geometry.coordinates[0]);
+          var center = turf.center(feature);
+          const centerText = new AMap.Text({
+            anchor: 'center', // 设置文本标记锚点
+            cursor: 'pointer',
+            angle: 0,
+            visible: true,
+            offset: [0, 0],
+            style: {
+              'padding': '2px 2px',
+              'margin-bottom': '1rem',
+              'border-radius': '.25rem',
+              'background-color': 'rgba(0,0,0,0.5)',
+              // 'width': '12rem',
+              'border-width': 0,
+              'box-shadow': '0 2px 6px 0 rgba(255, 255, 255, .3)',
+              'text-align': 'center',
+              'font-size': '12px',
+              'color': '#fff',
+            },
+            text: feature.properties.name,
+            position: center.geometry.coordinates,
+          });
+          console.log('建筑面积' + (feature.properties.qq).toFixed(2) + 'm²', feature.properties.h)
+          centerText.setMap(map);
+          const areaText = new AMap.Text({
+            anchor: 'center', // 设置文本标记锚点
+            cursor: 'pointer',
+            angle: 0,
+            visible: true,
+            offset: [20, 20],
+            style: {
+              'padding': '2px 2px',
+              'margin-bottom': '1rem',
+              'border-radius': '.25rem',
+              'background-color': 'rgba(0,0,0,0)',
+              // 'width': '12rem',
+              'border-width': 0,
+              // 'box-shadow': '0 2px 6px 0 rgba(255, 255, 255, .3)',
+              'text-align': 'center',
+              'font-size': '12px',
+              'color': '#fff',
+            },
+            text: '建筑面积' + (feature.properties.qq).toFixed(2) + 'm²',
+            position: center.geometry.coordinates,
+          });
+          areaText.setMap(map);
+
+          
+          return feature.properties.h;
+        },
+        sideColor: '#0887FF',
+        bottomColor: '#0887FF',
+        textureSize: [1000, 820],
+        texture: 'https://a.amap.com/Loca/static/loca-v2/demos/images/windows.jpg',
+      });
+      pl.setLoca(loca);
+    })
+  </script>
+</body>
+
+</html>

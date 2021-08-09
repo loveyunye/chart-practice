@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>北京人口流入流出情况</title>
+  <style>
+    html,
+    body,
+    #map {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .demo-title {
+      position: absolute;
+      top: 25px;
+      left: 25px;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 18px;
+      margin: 0;
+      color: rgb(180, 180, 190);
+    }
+
+    h3 {
+      font-size: 12px;
+      font-weight: normal;
+      margin-top: 5px;
+      color: rgb(150, 150, 150);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="demo-title">
+    <h1>疫情期间北京的流入流出情况</h1>
+    <h3>2020年某一时刻其他城市流入北京市及北京市的人口流出情况</h3>
+  </div>
+  <div id="map"></div>
+
+  <script src="https://webapi.amap.com/maps?v=2.0&key=1a12cb8b82f149ad8b3eaa51d1614802"></script>
+  <script src="https://webapi.amap.com/loca?v=2.0.0&key=1a12cb8b82f149ad8b3eaa51d1614802"></script>
+  <script>
+    var map = new AMap.Map('map', {
+      zoom: 5.12,
+      center: [109.595668, 35.447184],
+      showLabel: false,
+      viewMode: '3D',
+      mapStyle: 'amap://styles/da888b66f9d907b2aa722d05060a68d5',
+    });
+
+    var loca = new Loca.Container({
+      map,
+    });
+
+
+    // 下方呼吸点层
+    var scatter = new Loca.ScatterLayer({
+      // loca,
+      zIndex: 10,
+      opacity: 1,
+      visible: true,
+      zooms: [2, 22],
+    });
+
+    var scatterGeo = new Loca.GeoJSONSource({
+      url: 'https://a.amap.com/Loca/static/loca-v2/demos/mock_data/data-scatter.json',
+    });
+
+    scatter.setSource(scatterGeo);
+    scatter.setStyle({
+      unit: 'px',
+      size: (_, feature) => {
+        console.log(feature)
+        var size = feature.properties.lineWidthRatio * 2 + 30;
+        return [size, size];
+      },
+      borderWidth: 0,
+      texture: 'https://a.amap.com/Loca/static/loca-v2/demos/images/breath_yellow.png',
+      duration: 2000,
+      animate: true,
+    });
+    loca.add(scatter);
+
+    // loca.animate.start();
+  </script>
+</body>
+
+</html>

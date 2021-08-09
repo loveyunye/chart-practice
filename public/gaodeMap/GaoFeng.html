@@ -84,7 +84,8 @@
       distance: 3900,
     };
 
-    ajax('http://192.168.41.101:8081/json/fengchaoyuanqu.json', function (err, data) {
+    // ajax('http://192.168.41.101:8081/json/fengchaoyuanqu.json', function (err, data) {
+    ajax('/json/fengshouyuanqu.json', function (err, data) {
 
       const geoJson = {
         "type": "FeatureCollection",
@@ -101,6 +102,11 @@
           }
         })
       }
+      let link = document.createElement('a')
+      // link.download = 'GaoFeng.json'
+      link.download = 'FengShou.json'
+      link.href = 'data:text/plain,' + JSON.stringify(geoJson)
+      link.click()
 
       // addPl2()
       function addPl2() {
