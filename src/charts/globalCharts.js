@@ -10,18 +10,17 @@ import { getKey } from '../cookie/key';
 const requireComponent = require.context(
   '.',
   true,
-  /\.(\/[\u4e00-\u9fa5_a-zA-Z0-9]+)?\/index\.js$/,
+  /\.(\/[\u4e00-\u9fa5_a-zA-Z0-9]+)?(\/[\u4e00-\u9fa5_a-zA-Z0-9]+)?\/index\.js$/,
 );
 const requireIcons = require.context(
   '.',
   true,
-  /\.(\/[\u4e00-\u9fa5_a-zA-Z0-9]+)?\/icon\.png$/,
+  /\.(\/[\u4e00-\u9fa5_a-zA-Z0-9]+)?(\/[\u4e00-\u9fa5_a-zA-Z0-9]+)?\/icon\.png$/,
 );
-
 const requireConfig = require.context(
   '.',
   true,
-  /\.(\/[\u4e00-\u9fa5_a-zA-Z0-9]+)?\/package\.json$/,
+  /\.(\/[\u4e00-\u9fa5_a-zA-Z0-9]+)?(\/[\u4e00-\u9fa5_a-zA-Z0-9]+)?\/package\.json$/,
 );
 
 const chartLists = [];
@@ -50,7 +49,6 @@ requireComponent.keys().forEach((path) => {
       throw new Error(error);
     }
   }
-
   /**
    *  保存至store
    */
@@ -60,11 +58,13 @@ requireComponent.keys().forEach((path) => {
       chart: chart.default || chart,
       icon: icon || defaultIcon,
       config: deepMerge({}, defaultConfig, config),
-      key: path.split('/')[1],
+      key: `${path.split('/')[1]}-${path.split('/')[2]}`,
+      type: path.split('/')[1],
     });
   }
 });
 
+// 正在编辑的chart
 const ChartIndex = chartLists.findIndex((item) => item.key === getKey());
 
 store.dispatch('screen/listHandler', chartLists);

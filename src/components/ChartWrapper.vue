@@ -95,7 +95,9 @@ export default {
         this.$refs.chartParent.appendChild(chartElement);
         // 初始化
         this.chart = new this.chartClass(chartElement, this.currentOptions);
-        this.chart.initChart();
+        if (this.chart.initChart) {
+          this.chart.initChart();
+        }
       }
     },
     setData(data) {

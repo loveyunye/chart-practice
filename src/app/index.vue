@@ -42,7 +42,7 @@ export default {
     background-color: #2a3659;
     height: calc(100% - 70px);
     .side {
-      width: 200px;
+      width: 240px;
       height: 100%;
       transition: all 0.2s;
       &.pure {
