@@ -180,9 +180,9 @@ class MapFlyLine {
   // 添加图层
   async addLayers() {
     const { map } = this;
-    this.addRouteOrLine(map, 'router', this.routerId, this.routerJson);
+    // this.addRouteOrLine(map, 'router', this.routerId, this.routerJson);
     this.addRouteOrLine(map, 'line', this.lineId, this.lineGeoJson);
-    await this.addIcon(map);
+    // await this.addIcon(map);
     this.sortLayer();
   }
 

@@ -27,7 +27,7 @@
     var map = new AMap.Map('map', {
       zoom: 7.5,
       viewMode: '3D',
-      pitch: 45,
+      pitch: 0,
       mapStyle: 'amap://styles/da888b66f9d907b2aa722d05060a68d5',
       center: [115.892151, 28.676493],
       showBuildingBlock: false,
@@ -81,7 +81,7 @@
         return i
       })
       geoJSON = data
-      globalPl =  addPl2();
+      globalPl = addPl2();
     })
     let listPl = []
     function addPl2(altitude = 16001) {
@@ -150,47 +150,52 @@
     });
     loca.add(pl);
     map.on('click', (e) => {
-      var feat = pl.queryFeature(e.pixel.toArray());
-      if (feat) {
-        listPl.forEach(i => {
-            i.destroy()
-            loca.remove(i)
-          })
-          listPl = []
-        pl.addAnimate({
-          key: 'height',
-          value: [1, 2],
-          duration: 1000,
-          easing: 'CubicInOut',
-        }, function () {
-          addPl2(16001 * 2)
-          // globalPl.setStyle({
-          //   color: '#fff',
-          //   lineWidth: 2,
-          //   altitude: 16001 * 2,
-          // })
-        });
-        
-        pl.setStyle({
-          topColor: (index, feature) => {
-            if (feature === feat) {
-              return '#0887FF';
-            }
-            return '#09D9FF';
-          },
-          sideColor: (index, feature) => {
-            if (feature === feat) {
-              return [164, 241, 199, 0.5];
-            }
-            return '#0887FF';
-          },
-          height: function (index, feature) {
-            var v = values[index] * 100;
-            return 16000;
-          },
-        });
-      }
+      console.log(e);
+      const { lat, lng } = e.lnglat
+      console.log(lng + ',' + lat)
     })
+    // map.on('click', (e) => {
+    //   var feat = pl.queryFeature(e.pixel.toArray());
+    //   if (feat) {
+    //     listPl.forEach(i => {
+    //       i.destroy()
+    //       loca.remove(i)
+    //     })
+    //     listPl = []
+    //     pl.addAnimate({
+    //       key: 'height',
+    //       value: [1, 2],
+    //       duration: 1000,
+    //       easing: 'CubicInOut',
+    //     }, function () {
+    //       addPl2(16001 * 2)
+    //       // globalPl.setStyle({
+    //       //   color: '#fff',
+    //       //   lineWidth: 2,
+    //       //   altitude: 16001 * 2,
+    //       // })
+    //     });
+
+    //     pl.setStyle({
+    //       topColor: (index, feature) => {
+    //         if (feature === feat) {
+    //           return '#0887FF';
+    //         }
+    //         return '#09D9FF';
+    //       },
+    //       sideColor: (index, feature) => {
+    //         if (feature === feat) {
+    //           return [164, 241, 199, 0.5];
+    //         }
+    //         return '#0887FF';
+    //       },
+    //       height: function (index, feature) {
+    //         var v = values[index] * 100;
+    //         return 16000;
+    //       },
+    //     });
+    //   }
+    // })
   </script>
 </body>
 

@@ -111,7 +111,7 @@ export default {
       // 地图加载
       this.map = new AMap.Map('container', {
         resizeEnable: true,
-        zoom: 30,
+        zoom: 6.5,
         showBuildingBlock: false,
       });
       // 标记

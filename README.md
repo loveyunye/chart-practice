@@ -1,9 +1,7 @@
 # chart-practice
-
-## Project setup
-```
-yarn install
-```
+图表库
+## 描述
+1. 
 
 ### Compiles and hot-reloads for development
 ```
