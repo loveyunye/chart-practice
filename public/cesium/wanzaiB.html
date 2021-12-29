@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css" />
+  <script src="https://webapi.amap.com/maps?v=2.0&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.MouseTool"></script>
+  <!-- <script src="https://webapi.amap.com/maps?v=2.0&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.Map3D"></script> -->
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <script src="https://npmcdn.com/@turf/turf@6.5.0/turf.min.js"></script>
+  <style>
+    .marker-circle {
+      width: 40px;
+      height: 40px;
+      background-color: #fff;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      font-size: 18px;
+      transform: scale(0.4);
+      transform-origin: center center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container"></div>
+  <!-- <div class="input-card" style="width: 200px">
+   <h4 style="margin-bottom: 10px; font-weight: 600">利用mouseTool绘制覆盖物</h4>
+   <button class="btn" onclick="drawPolygon()" style="margin-bottom: 5px">绘制多边形</button> 
+</div> -->
+
+
+  <script>
+    var map = new AMap.Map('container', {
+      viewMode: '3D',
+      showBuildingBlock: false,
+      center: [114.51447001250605, 28.194635192008743],
+      pitch: 0,
+      zoom: 15.4,
+      mapStyle: 'amap://styles/be91f0ee35cf36a2150890e2ff3beb55',
+    });
+    const markers = []
+
+
+    function getMakerContent(index) {
+      return `<div class="marker-circle">${index}</div>`
+    }
+    ajax('./wanZaiB.json', function (err, json) {
+      if (!err) {
+        console.log(json.length);
+        for (let i = 0; i < json.length - 1; i++) {
+          const marker = new AMap.Marker({
+            // icon: "//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+            position: json[i],
+            content: getMakerContent(i),
+            offset: new AMap.Pixel(-10, -10)
+          });
+          // marker.setMap(map);
+          map.add(marker)
+          markers.push(marker)
+        }
+
+        // const distance = turf.distance(turf.point(json[1]), turf.point(json[2]), { units: 'kilometers'}) * 1000;
+        // console.log(distance);
+
+        // 计算出边界
+        var line = turf.lineString(json);
+        var bbox = turf.bbox(line); // [-82, 35, -74, 42]
+        // var bboxPolygon = turf.bboxPolygon(bbox);
+        // 绘制矩形
+        var bboxPolygon = turf.bboxPolygon(bbox);
+        const leftBottom = [bbox[0], bbox[1]]
+        const rightBottom = [bbox[2], bbox[1]]
+        const rightTop = [bbox[2], bbox[3]]
+        const leftTop = [bbox[0], bbox[3]]
+        polygon = new AMap.Polygon({
+          map: map,
+          fillOpacity: 0.4,
+          // 左下角、右下、右上、左上
+          // path: [[bbox[0], bbox[1]], [bbox[2], bbox[1]],   [bbox[2], bbox[3]], [bbox[0], bbox[3]]]
+          path: [leftBottom, rightBottom, rightTop, leftTop]
+        });
+
+        // 计算长宽
+        const width = turf.distance(turf.point(leftBottom), turf.point(rightBottom), { units: 'kilometers' });
+        const height = turf.distance(turf.point(leftBottom), turf.point(leftTop), { units: 'kilometers' });
+        // console.log(width, height);
+        // 长宽 2624.2742088916893 2621.3806678410397 
+        // 2624.2742088916893 / 2 * Math.sqrt(2) = 1855.642088800276 很接近1900米了
+
+
+        // 线
+        var line = turf.lineString(
+          [
+            leftTop,
+            rightTop,
+          ],
+        );
+        var offsetLine = turf.lineOffset(line, width / 6, { units: "kilometers" });
+        // new AMap.Polyline({
+        //   map: map,
+        //   path: offsetLine.geometry.coordinates,
+        //   isOutline: true,
+        //   outlineColor: '#F00',
+        //   strokeColor: "#F00",
+        //   borderWeight: 1,
+        //   zIndex: 50,
+        // })
+
+        // 面
+        var cellSide = height / 3;
+        var options = { units: "kilometers" };
+        var squareGrid = turf.squareGrid(bbox, cellSide, options);
+        // console.log(squareGrid);
+
+        const PolygonCollection = []
+        squareGrid.features.forEach((i) => {
+          const polygon = new AMap.Polygon({
+            map: map,
+            fillOpacity: 0.4,
+            // 左下角、右下、右上、左上
+            path: i.geometry.coordinates,
+            strokeColor: "#F00",
+            fillColor: '#00ff00',
+          })
+          PolygonCollection.push(polygon);
+        })
+        // 将点汇聚合并
+        // console.log(squareGrid)
+        // features.
+        // const polygonPoints = squareGrid.features.map((i) => i.geometry.coordinates).map((i) => {
+        //   console.log(i)
+        //   return turf.polygon([i])
+        // })
+        const polygonPoints = squareGrid.features;
+        // console.log(polygonPoints)
+
+        // var pt = turf.point([-72, 41]);
+        // var poly = turf.polygon([
+        //   [
+        //     [-81, 41],
+        //     [-81, 47],
+        //     [-72, 47],
+        //     [-72, 41],
+        //     [-81, 41]
+        //   ]
+        // ]);
+
+        const jsonKey = json.map((i, index) => ({
+          pt: turf.point(i),
+          index: index,
+          point: i,
+        }))
+
+        const collection = polygonPoints.map((polygon) => {
+          let keyCollection = [];
+          // console.log(jsonKey.length, jsonKey[0], polygon);
+          
+          for (let i = 0; i < jsonKey.length; i++) {
+            const boolean = turf.booleanPointInPolygon(jsonKey[i].pt, polygon, {
+              ignoreBoundary: false
+            });
+            if (boolean) {
+              keyCollection.push({...jsonKey[i], polygon} )
+            }
+          }
+          return keyCollection
+        }).filter((i) => i.length > 4)
+
+        const result = collection.map((i) => {
+          var boxItem = turf.bbox(turf.lineString(i.map((i) => i.point)));
+          const first = turf.point([boxItem[0], boxItem[1]])
+          const two = turf.point([boxItem[2], boxItem[3]])
+          const radius = turf.distance(first, two, { units: 'kilometers' }) * 1000 + 100;
+          const center = turf.center(turf.featureCollection([first, two]))
+          // console.log(center)
+          return {
+            geometricError: radius,
+            center: center.geometry.coordinates,
+            index: i.map((i) => i.index)
+          }
+        })
+
+        console.log(JSON.stringify(result))
+
+        // console.log(result)
+
+        // let link = document.createElement('a')
+        // link.download = 'result.json'
+        // link.href = 'data:text/plain,' + JSON.stringify(result)
+        // link.click()
+
+        // var boolean = turf.booleanPointInPolygon(pt, poly, {
+        //   ignoreBoundary: false
+        // });
+      }
+    })
+
+
+
+
+
+    var mouseTool = new AMap.MouseTool(map)
+    mouseTool.on('draw', function (event) {
+      // event.obj 为绘制出来的覆盖物对象
+      log.info('覆盖物对象绘制完成')
+      console.log(event.obj)
+    })
+
+    function drawPolygon() {
+      const polygon = mouseTool.polygon({
+        strokeColor: "#FF33FF",
+        strokeOpacity: 1,
+        strokeWeight: 6,
+        strokeOpacity: 0.2,
+        fillColor: '#1791fc',
+        fillOpacity: 0.4,
+        // 线样式还支持 'dashed'
+        strokeStyle: "solid",
+        // strokeStyle是dashed时有效
+        // strokeDasharray: [30,10],
+      })
+      console.log(polygon);
+    }
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css" />
+  <script src="https://webapi.amap.com/maps?v=2.0&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.MouseTool"></script>
+  <!-- <script src="https://webapi.amap.com/maps?v=2.0&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.Map3D"></script> -->
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <script src="https://npmcdn.com/@turf/turf@6.5.0/turf.min.js"></script>
+  <style>
+    .marker-circle {
+      width: 40px;
+      height: 40px;
+      background-color: #fff;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      font-size: 18px;
+      transform: scale(0.4);
+      transform-origin: center center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container"></div>
+  <!-- <div class="input-card" style="width: 200px">
+   <h4 style="margin-bottom: 10px; font-weight: 600">利用mouseTool绘制覆盖物</h4>
+   <button class="btn" onclick="drawPolygon()" style="margin-bottom: 5px">绘制多边形</button> 
+</div> -->
+
+
+  <script>
+    var map = new AMap.Map('container', {
+      viewMode: '3D',
+      showBuildingBlock: false,
+      center: [115.84792,28.688891],
+      pitch: 0,
+      zoom: 15.4,
+      mapStyle: 'amap://styles/be91f0ee35cf36a2150890e2ff3beb55',
+    });
+    new AMap.Polyline({
+      map: map,
+      path: [
+      [115.84792,28.688891],
+      [115.84776,28.688528],
+      [115.848186,28.688762],
+      [115.848773,28.689188],
+      [115.848151,28.6872],
+      [115.847751,28.686375],
+      [115.847377,28.685644],
+      [115.846444,28.683786],
+      [115.846568,28.683366],
+      [115.847537,28.682984],
+      [115.848968,28.682715],
+      [115.868693,28.67076],
+      [115.868871,28.669715],
+      [115.868968,28.668935],
+      [115.869022,28.668315],
+      [115.869075,28.667953],
+      [115.869137,28.6675],
+      [115.869182,28.666951],
+      [115.869235,28.666604],
+      [115.869253,28.666428],
+      [115.86928,28.666197],
+      [115.869422,28.665702],
+      [115.86936,28.665348],
+      [115.869386,28.665202],
+      [115.869413,28.664824],
+      [115.869413,28.664708],
+      [115.869404,28.66436],
+      [115.869395,28.66416],
+      [115.86936,28.663868],
+      [115.86936,28.663871],
+      [115.869342,28.663744],
+      [115.869324,28.663584],
+      [115.869315,28.663502],
+      [115.869306,28.663444],
+      [115.86928,28.663277],
+      [115.869102,28.662535],
+      [115.869066,28.662397],
+      [115.867617,28.659442],
+      [115.866622,28.657448],
+      [115.86552,28.655631],
+      [115.867306,28.654688],
+      [115.868844,28.653391],
+      [115.868577,28.652851],
+      [115.868168,28.651495],
+      [115.868213,28.650468],
+      [115.868488,28.650408],
+      [115.868497,28.650384],
+      [115.870213,28.649968],
+      [115.87328,28.64932],
+      [115.874177,28.648946],
+      ],
+      isOutline: true,
+      outlineColor: '#F00',
+      strokeColor: "#F00",
+      borderWeight: 1,
+      zIndex: 50,
+    })
+
+  </script>
+</body>
+
+</html>

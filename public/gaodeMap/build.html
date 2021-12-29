@@ -81,8 +81,6 @@
 
             // 计算面积
             var area = AMap.GeometryUtil.ringArea(lnglats[0])
-            console.log(area)
-
             const polygon = new AMap.Polygon({
               path: lnglats,
               fillOpacity: 1 - Math.sqrt(area / 8000000000),// 面积越大透明度越高
