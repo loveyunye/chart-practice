@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>智慧城市demo</title>
+  <link href="Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <script src="Build/Cesium/Cesium.js"></script>
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+
+
+  <!-- <script src="https://cesium.com/downloads/cesiumjs/releases/1.87.1/Build/Cesium/Cesium.js"></script> -->
+  <!-- <link href="https://cesium.com/downloads/cesiumjs/releases/1.87.1/Build/Cesium/Widgets/widgets.css" rel="stylesheet"> -->
+  <style>
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      overflow: hidden;
+      padding: 0;
+      background: #000;
+    }
+
+    #cesiumContainer {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cesiumContainer"></div>
+  <script>
+    var viewer = new Cesium.Viewer('cesiumContainer');
+    const acg = new Cesium.ArcGisMapServerImageryProvider({
+      url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',
+      maximumLevel: 16,
+    });
+    viewer.imageryLayers.addImageryProvider(acg);
+    viewer.scene.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(116.0009, 29.4219, 1000),  //定位坐标点，建议使用谷歌地球坐标位置无偏差
+      duration: 0,   //定位的时间间隔
+      // orientation : {
+      //   pitch : Cesium.Math.toRadians(-90.0),
+      // }
+    });
+
+    var promise = Cesium.GeoJsonDataSource.load('http://192.168.2.3:8080/json/jianzhu.json');
+    promise.then(function (dataSource) {
+      viewer.dataSources.add(dataSource);
+      var entities = dataSource.entities.values;
+      var colorHash = {};
+      // console.log(dataSource)
+
+      ajax('/json/nanchang.json',(err, data) =>{
+        console.log(data.length, 'data')
+        console.log(data, 'data')
+      })
+      console.log(entities.length)
+      for (var i = 0; i < entities.length; i++) {
+        var entity = entities[i];
+        var name = entity.name;
+        // var color = colorHash[name];
+        // if (!color) {
+        //   color = Cesium.Color.fromRandom({
+        //     red: 1,
+        //     maximumGreen: 1,
+        //     maximumBlue: 1,
+        //     alpha: 1.0
+        //   });
+        //   colorHash[name] = color;
+        // }
+        entity.polygon.material = new Cesium.Color(0.0, 1.0, 1.0, 1);
+        entity.polygon.outline = false;
+        entity.polygon.extrudedHeight = 50;
+      }
+    });
+    // viewer.flyTo(promise);
+  </script>
+</body>
+
+
+</html>

@@ -32,11 +32,12 @@
     var map = new AMap.Map('map', {
       viewMode: '3D',
       zoom: 17,
-      center: [115.86439387001712,
-        28.498785163095306],
+      // center: [115.86439387001712,
+      //   28.498785163095306],
+      center: [116.0009, 29.4219],
       mapStyle: 'amap://styles/da888b66f9d907b2aa722d05060a68d5',
       showBuildingBlock: false,
-      showLabel: false,
+      showLabel: true,
       pitch: 55,
       zoom: 17,
     });
@@ -64,15 +65,15 @@
       distance: 3900,
     };
 
-    ajax('/json/build.json', function (err, data) {
-      console.log(data)
+    // ajax('/json/build.json', function (err, data) {
+    // ajax('/json/nanchang.json', function (err, data) {
+    ajax('/json/jianzhu.json', function (err, data) {
       data.features.forEach((i) => {
         i.properties.h = '20'
       })
       var geo = new Loca.GeoJSONSource({
         data,
       });
-      console.log(data)
 
       var pl = window.pl = new Loca.PolygonLayer({
         zIndex: 120,
@@ -87,55 +88,55 @@
         topColor: '#09D9FF',
         height: function (index, feature) {
           // var features = turf.points(feature.geometry.coordinates[0]);
-          var center = turf.center(feature);
-          const centerText = new AMap.Text({
-            anchor: 'center', // 设置文本标记锚点
-            cursor: 'pointer',
-            angle: 0,
-            visible: true,
-            offset: [0, 0],
-            style: {
-              'padding': '2px 2px',
-              'margin-bottom': '1rem',
-              'border-radius': '.25rem',
-              'background-color': 'rgba(0,0,0,0.5)',
-              // 'width': '12rem',
-              'border-width': 0,
-              'box-shadow': '0 2px 6px 0 rgba(255, 255, 255, .3)',
-              'text-align': 'center',
-              'font-size': '12px',
-              'color': '#fff',
-            },
-            text: feature.properties.name,
-            position: center.geometry.coordinates,
-          });
-          console.log('建筑面积' + (feature.properties.qq).toFixed(2) + 'm²', feature.properties.h)
-          centerText.setMap(map);
-          const areaText = new AMap.Text({
-            anchor: 'center', // 设置文本标记锚点
-            cursor: 'pointer',
-            angle: 0,
-            visible: true,
-            offset: [20, 20],
-            style: {
-              'padding': '2px 2px',
-              'margin-bottom': '1rem',
-              'border-radius': '.25rem',
-              'background-color': 'rgba(0,0,0,0)',
-              // 'width': '12rem',
-              'border-width': 0,
-              // 'box-shadow': '0 2px 6px 0 rgba(255, 255, 255, .3)',
-              'text-align': 'center',
-              'font-size': '12px',
-              'color': '#fff',
-            },
-            text: '建筑面积' + (feature.properties.qq).toFixed(2) + 'm²',
-            position: center.geometry.coordinates,
-          });
-          areaText.setMap(map);
+          // var center = turf.center(feature);
+          // const centerText = new AMap.Text({
+          //   anchor: 'center', // 设置文本标记锚点
+          //   cursor: 'pointer',
+          //   angle: 0,
+          //   visible: true,
+          //   offset: [0, 0],
+          //   style: {
+          //     'padding': '2px 2px',
+          //     'margin-bottom': '1rem',
+          //     'border-radius': '.25rem',
+          //     'background-color': 'rgba(0,0,0,0.5)',
+          //     // 'width': '12rem',
+          //     'border-width': 0,
+          //     'box-shadow': '0 2px 6px 0 rgba(255, 255, 255, .3)',
+          //     'text-align': 'center',
+          //     'font-size': '12px',
+          //     'color': '#fff',
+          //   },
+          //   text: feature.properties.name,
+          //   position: center.geometry.coordinates,
+          // });
+          // console.log('建筑面积' + (feature.properties.qq).toFixed(2) + 'm²', feature.properties.h)
+          // centerText.setMap(map);
+          // const areaText = new AMap.Text({
+          //   anchor: 'center', // 设置文本标记锚点
+          //   cursor: 'pointer',
+          //   angle: 0,
+          //   visible: true,
+          //   offset: [20, 20],
+          //   style: {
+          //     'padding': '2px 2px',
+          //     'margin-bottom': '1rem',
+          //     'border-radius': '.25rem',
+          //     'background-color': 'rgba(0,0,0,0)',
+          //     // 'width': '12rem',
+          //     'border-width': 0,
+          //     // 'box-shadow': '0 2px 6px 0 rgba(255, 255, 255, .3)',
+          //     'text-align': 'center',
+          //     'font-size': '12px',
+          //     'color': '#fff',
+          //   },
+          //   text: '建筑面积' + (feature.properties.qq).toFixed(2) + 'm²',
+          //   position: center.geometry.coordinates,
+          // });
+          // areaText.setMap(map);
 
           
-          return feature.properties.h;
+          return 20;
         },
         sideColor: '#0887FF',
         bottomColor: '#0887FF',

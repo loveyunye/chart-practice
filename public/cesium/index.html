@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>智慧城市demo</title>
+  <link href="Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <script src="Build/Cesium/Cesium.js"></script>
+  <style>
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      overflow: hidden;
+      padding: 0;
+      background: #000;
+    }
+
+    #cesiumContainer {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cesiumContainer"></div>
+  <script>
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+      shouldAnimate: true,
+      useDefaultRenderLoop: true,
+      infoBox: false,
+      contextOptions: {
+        webgl: {
+          alpha: false,
+          antialias: true,
+          preserveDrawingBuffer: true,
+          failIfMajorPerformanceCaveat: false,
+          depth: true,
+          stencil: false,
+          anialias: false
+        },
+      }
+    });
+    viewer.scene.open('http://www.supermapol.com/realspace/services/3D-CQmodel_wireframe_2000/rest/realspace')
+    const acg = new Cesium.ArcGisMapServerImageryProvider({
+      url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',
+      maximumLevel: 16,
+    });
+    viewer.imageryLayers.addImageryProvider(acg);
+    viewer.scene.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(114.51447001250605, 28.194635192008743, 200),  //定位坐标点，建议使用谷歌地球坐标位置无偏差
+      duration: 1,   //定位的时间间隔
+      orientation : {
+        pitch : Cesium.Math.toRadians(-35.0),
+      }
+    });
+
+    // 添加模型
+    viewer.scene.open('http://www.supermapol.com/realspace/services/3D-CQmodel_wireframe_2000/rest/realspace')
+  </script>
+</body>
+
+</html>

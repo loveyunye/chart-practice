@@ -40,10 +40,20 @@
       viewMode: '3D',
       showBuildingBlock: false,
       center: [114.49034450318256, 28.135841532602658],
+      // center: [115.907400, 28.578402],
       pitch: 0,
-      zoom: 15.4,
+      // zoom: 15.4,
+      zoom: 17,
       mapStyle: 'amap://styles/be91f0ee35cf36a2150890e2ff3beb55',
     });
+
+    const marker = new AMap.Marker({
+      icon: "//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+      position: [115.907400, 28.578402],
+      offset: new AMap.Pixel(-10, -10)
+    });
+    map.add(marker)
+
     const markers = []
 
 
@@ -52,7 +62,6 @@
     }
     ajax('./points.json', function (err, json) {
       if (!err) {
-        console.log(json.length);
         for (let i = 0; i < json.length - 1; i++) {
           const marker = new AMap.Marker({
             // icon: "//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
@@ -190,10 +199,10 @@
 
         // console.log(result)
 
-        let link = document.createElement('a')
-link.download = 'result.json'
-link.href = 'data:text/plain,' + JSON.stringify(result)
-link.click()
+//         let link = document.createElement('a')
+// link.download = 'result.json'
+// link.href = 'data:text/plain,' + JSON.stringify(result)
+// link.click()
 
         // var boolean = turf.booleanPointInPolygon(pt, poly, {
         //   ignoreBoundary: false
