@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧城市demo</title>
+  <!-- <link href="Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <script src="Build/Cesium/Cesium.js"></script> -->
+
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.87.1/Build/Cesium/Cesium.js"></script>
+	<link href="https://cesium.com/downloads/cesiumjs/releases/1.87.1/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <style>
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      overflow: hidden;
+      padding: 0;
+      background: #000;
+    }
+
+    #cesiumContainer {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="cesiumContainer"></div>
+  <script>
+    //Seed the random number generator for repeatable results.
+    Cesium.Ion.defaultAccessToken =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhODkxNTgxYy1kMDA2LTRiNTEtODMwNS1jZjZlOTY2ZGE4MWIiLCJpZCI6NzQxODMsImlhdCI6MTY0NDMwMjUwMn0.LyLk0TrJ5S1lqTDtpUqeKqoXPVt1c128N-5henleKGE';
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+      shouldAnimate: true,
+      useDefaultRenderLoop: true,
+      infoBox: false,
+      contextOptions: {
+        webgl: {
+          alpha: false,
+          antialias: true,
+          preserveDrawingBuffer: true,
+          failIfMajorPerformanceCaveat: false,
+          depth: true,
+          stencil: false,
+          anialias: false
+        },
+      }
+    });
+    Cesium.Math.setRandomNumberSeed(0);
+    
+    viewer.scene.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(116.980637,28.826896),  //定位坐标点，建议使用谷歌地球坐标位置无偏差
+      duration: 0,   //定位的时间间隔
+      orientation : {
+        pitch : Cesium.Math.toRadians(-90.0),
+      }
+    });
+ 
+    var promise = Cesium.GeoJsonDataSource.load('./FengChao.json');
+    promise.then(function(dataSource) {
+        viewer.dataSources.add(dataSource);
+ 
+        //Get the array of entities
+        var entities = dataSource.entities.values;
+        
+        var colorHash = {};
+        for (var i = 0; i < entities.length; i++) {
+            //For each entity, create a random color based on the state name.
+            //Some states have multiple entities, so we store the color in a
+            //hash so that we use the same color for the entire state.
+            var entity = entities[i];
+            var name = entity.name;
+            var color = colorHash[name];
+            if (!color) {
+                color = Cesium.Color.fromRandom({
+                    alpha : 1.0
+                });
+                colorHash[name] = color;
+            }
+            
+            //Set the polygon material to our random color.
+            entity.polygon.material = color;
+            entity.polygon.material = './windows.jpeg'
+            // entity.polygon.material = new Cesium.GridMaterialProperty({
+            //   color : Cesium.Color.YELLOW,
+            //   cellAlpha : 0.2,
+            //   lineCount : new Cesium.Cartesian2(8, 8),
+            //   lineThickness : new Cesium.Cartesian2(2.0, 2.0)
+            // });
+            //Remove the outlines.
+            entity.polygon.outline = true;
+            //Extrude the polygon based on the state's population.  Each entity
+            //stores the properties for the GeoJSON feature it was created from
+            //Since the population is a huge number, we divide by 50.
+            entity.polygon.extrudedHeight = Number(entity.properties.h) * 20;
+        }
+        viewer.zoomTo(promise)
+    })
+  </script>
+</body>
+</html>
