@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css" />
+  <script src="https://webapi.amap.com/maps?v=2.0&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.MouseTool"></script>
+  <!-- <script src="https://webapi.amap.com/maps?v=2.0&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.Map3D"></script> -->
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <script src="https://npmcdn.com/@turf/turf@6.5.0/turf.min.js"></script>
+  <style>
+    .marker-circle {
+      width: 40px;
+      height: 40px;
+      background-color: #fff;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      font-size: 18px;
+      transform: scale(0.4);
+      transform-origin: center center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container"></div>
+
+  <script>
+    var map = new AMap.Map('container', {
+      viewMode: '3D',
+      showBuildingBlock: false,
+      // center: [115.10176908480543,27.278685069907446],
+      pitch: 0,
+      // zoom: 15.4,
+      zoom: 16,
+      mapStyle: 'amap://styles/be91f0ee35cf36a2150890e2ff3beb55',
+    });
+
+    // const marker = new AMap.Marker({
+    //   icon: "//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+    //   position: [115.10176908480543,27.278685069907446],
+    //   offset: new AMap.Pixel(-10, -10)
+    // });
+    // map.add(marker)
+
+    const markers = []
+
+
+    function getMakerContent(index) {
+      return `<div class="marker-circle">${index}</div>`
+    }
+    ajax('./json/JS-map.json',(err, json) => {
+      if (!err) {
+        map.setCenter(new AMap.LngLat(...json[0]))
+        for (let i = 0; i < json.length - 1; i++) {
+          const marker = new AMap.Marker({
+            position: json[i],
+            content: getMakerContent(i),
+            offset: new AMap.Pixel(-10, -10)
+          });
+          // marker.setMap(map);
+          map.add(marker)
+          markers.push(marker)
+        }
+
+        // 计算出边界 - 盒子边界点
+        var line = turf.lineString(json);
+        var bbox = turf.bbox(line); // [-82, 35, -74, 42]
+
+        // var bboxPolygon = turf.bboxPolygon(bbox);
+        // 绘制矩形
+        var bboxPolygon = turf.bboxPolygon(bbox);
+        const leftBottom = [bbox[0], bbox[1]]
+        const rightBottom = [bbox[2], bbox[1]]
+        const rightTop = [bbox[2], bbox[3]]
+        const leftTop = [bbox[0], bbox[3]]
+        polygon = new AMap.Polygon({
+          map: map,
+          fillOpacity: 0.4,
+          // 左下角、右下、右上、左上
+          // path: [[bbox[0], bbox[1]], [bbox[2], bbox[1]],   [bbox[2], bbox[3]], [bbox[0], bbox[3]]]
+          path: [leftBottom, rightBottom, rightTop, leftTop]
+        });
+
+        // 计算长宽
+        const width = turf.distance(turf.point(leftBottom), turf.point(rightBottom), { units: 'kilometers' });
+        const height = turf.distance(turf.point(leftBottom), turf.point(leftTop), { units: 'kilometers' });
+        window.width = width;
+        window.height = height;
+        window.bbox = bbox;
+
+
+        // cellSide height / n  根据高度设置每段方格变长 n越大分割越精细
+        // var cellSide = height / 15;
+        var cellSide = width / 4.15;
+        var options = { units: "kilometers" };
+        // 得到均匀的块Polygon
+        var squareGrid = turf.squareGrid(bbox, cellSide, options);
+
+        // 绘制块
+        const PolygonCollection = []
+        window.map = map;
+        squareGrid.features.forEach((i) => {
+          const polygon = new AMap.Polygon({
+            map: map,
+            fillOpacity: 0.4,
+            // 左下角、右下、右上、左上
+            path: i.geometry.coordinates,
+            strokeColor: "#F00",
+            fillColor: '#00ff00',
+          })
+          PolygonCollection.push(polygon);
+        })
+
+
+        // 判断点位是否在 ?*n 网格内，并生成数据
+        const polygonPoints = squareGrid.features;
+        const jsonKey = json.map((i, index) => ({
+          pt: turf.point(i),
+          index: index, // 记录index
+          point: i,
+        }))
+        const collection = polygonPoints.map((polygon) => {
+          let keyCollection = [];
+          for (let i = 0; i < jsonKey.length; i++) {
+            const boolean = turf.booleanPointInPolygon(jsonKey[i].pt, polygon, {
+              ignoreBoundary: false
+            });
+            if (boolean) {
+              keyCollection.push({...jsonKey[i], polygon} )
+            }
+          }
+          return keyCollection
+        }).filter((i) => i.length > 6) // 方格内点 > 4
+
+
+        // 将结果数据转化 获取 中心点、边界、索引值
+        const result = collection.map((i) => {
+          var boxItem = turf.bbox(turf.lineString(i.map((i) => i.point))); // 判断方格
+          const first = turf.point([boxItem[0], boxItem[1]])
+          const two = turf.point([boxItem[2], boxItem[3]])
+          const radius = turf.distance(first, two, { units: 'kilometers' }) * 1000 + 100;
+          const center = turf.center(turf.featureCollection([first, two])) // 获取中心点
+          // console.log(center)
+          return {
+            geometricError: radius,
+            center: center.geometry.coordinates,
+            index: i.map((i) => i.index) // 记录index
+          }
+        })
+        console.log('生成的块：', result.length)
+        generateJson(result, 'JS')
+      }
+    })
+
+    function generateJson(result, name = 'result') {
+      let link = document.createElement('a')
+      link.download = `GD-${name}.json`
+      link.href = 'data:text/plain,' + JSON.stringify(result)
+      link.click()
+    }
+  </script>
+</body>
+
+</html>
