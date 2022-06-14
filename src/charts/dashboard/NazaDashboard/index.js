@@ -42,7 +42,23 @@ class PieCompass {
     tickLine: { number: 5, length: 10, width: 1, color: '#3BAFFB', show: true },
     point: { width: 4, color: '#ffffff', show: true },
     outerArc: { width: 2, color: '#3BAFFB', distance: 0, show: true },
-    innerArc: { width: 1, color: '#3BAFFB', distance: 8, show: true },
+    innerArc: {
+      width: 1,
+      color: [
+        {
+          opacity: 1,
+          color: '#3BAFFB',
+          offset: 0,
+        },
+        {
+          opacity: 1,
+          color: '#3BAFFB',
+          offset: 1,
+        },
+      ],
+      distance: 8,
+      show: true,
+    },
     text: {
       fontSize: 30,
       fontWight: 500,
@@ -101,10 +117,12 @@ class PieCompass {
       innerArc,
       globalConfig,
     } = this.options;
-    const { clientWidth: width, clientHeight: height } = this.container;
-    this.containerG.attr('transform', `translate(${width / 2}, ${height / 2})`);
-
     const { startAngle, endAngle, radius } = this;
+    const { clientWidth: width, clientHeight: height } = this.container;
+    this.containerG.attr(
+      'transform',
+      `translate(${width / 2}, ${height / 2 + radius / 2})`,
+    );
 
     // 创建尺子
     const scaleDividing = scaleLinear()
@@ -188,7 +206,7 @@ class PieCompass {
       .attr('stroke', tickLine.color)
       .attr('stroke-width', tickLine.width);
 
-    // 环形渐变
+    // 线性渐变
     this.linearGradientID = `linearGradientID${Math.random()
       .toFixed(8)
       .replace('0.', '')}`;
@@ -198,8 +216,8 @@ class PieCompass {
       .attr('id', this.linearGradientID)
       .attr('x1', 0)
       .attr('y1', 0)
-      .attr('x2', 0)
-      .attr('y2', 1)
+      .attr('x2', 1)
+      .attr('y2', 0)
       .selectAll('stop')
       .data(axis.color)
       .enter()
@@ -227,13 +245,48 @@ class PieCompass {
       )
       .attr('fill', axis.bgColor);
 
+    // 径向渐变
+    this.radialGradientID = `radialGradientID${Math.random()
+      .toFixed(8)
+      .replace('0.', '')}`;
+    this.containerG
+      .append('defs')
+      .append('radialGradient')
+      .attr('id', this.radialGradientID)
+      .selectAll('stop')
+      .data(innerArc.color)
+      .enter()
+      .append('stop')
+      .attr('offset', (d) => d.offset)
+      .attr('stop-color', (d) => d.color)
+      .attr('stop-opacity', (d) => d.opacity);
+
     // 外环、内环
     this.outer = d3Arc()
       .outerRadius(radius + outerArc.distance)
       .innerRadius(radius + outerArc.distance - outerArc.width);
+
+    // 内环处理
     const inner = d3Arc()
       .outerRadius(innerRadius - innerArc.distance)
       .innerRadius(innerRadius - innerArc.distance - innerArc.width);
+    // 裁剪
+    this.clipPathID = `clipPathID${Math.random()
+      .toFixed(8)
+      .replace('0.', '')}`;
+    this.containerG
+      .append('clipPath')
+      .attr('id', this.clipPathID)
+      .attr('class', 'clip-path')
+      .append('path')
+      .attr(
+        'd',
+        inner({
+          startAngle: startAngle * Math.PI,
+          endAngle: endAngle * Math.PI,
+        }),
+      );
+
     this.arcG.select('.inner-arc').remove();
     this.arcG
       .append('path')
@@ -241,12 +294,15 @@ class PieCompass {
       .attr(
         'd',
         inner({
-          startAngle: startAngle * Math.PI,
-          endAngle: endAngle * Math.PI,
+          // startAngle: startAngle * Math.PI,
+          // endAngle: endAngle * Math.PI,
+          startAngle: 0,
+          endAngle: 2 * Math.PI,
         }),
       )
       .style('display', `${innerArc.show ? 'block' : 'none'}`)
-      .attr('fill', innerArc.color);
+      .attr('fill', `url(#${this.radialGradientID})`)
+      .attr('clip-path', `url(#${this.clipPathID})`);
 
     // 绘制指针
     this.containerG.select('polygon').remove();
