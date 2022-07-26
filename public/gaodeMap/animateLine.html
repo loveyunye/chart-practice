@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <script src="https://webapi.amap.com/maps?v=1.4.15&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.MoveAnimation"></script>
+  <script src="https://npmcdn.com/@turf/turf@6.5.0/turf.min.js"></script>
+  <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" type="text/css">
+  <style>
+    html,
+    body,
+    #container {
+      height: 100%
+    }
+    .arrow {
+      width: 8px;
+      height: 8px;
+      box-sizing: border-box;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      
+      /* transform: translate(-50%,-50%);
+      background-color: #fff; */
+
+
+      border-bottom: 3px solid #fff;
+      border-right: 3px solid #fff;
+      transform: translate(-50%,-50%) rotate(-45deg);
+    }
+  </style>
+  <title>鼠标工具绘制</title>
+</head>
+
+<body>
+  <div id='container'></div>
+  <script type="text/javascript">
+    var map = new AMap.Map('container', {
+      zoom: 16,
+      center: [114.423783, 27.800172]
+    });
+    map.setLayers([new AMap.TileLayer.Satellite()])
+
+    // setTimeout(() => {
+    //   map.setLayers([new AMap.TileLayer()])
+    // }, 4000);
+    const data = [
+      { "lng": 114.423829, "lat": 27.801776 },
+      { "lng": 114.423783, "lat": 27.805172 },
+      { "lng": 114.421743, "lat": 27.800215 },
+      { "lng": 114.42152, "lat": 27.798585 },
+      { "lng": 114.423636, "lat": 27.798452 }
+    ].map((i) => [i.lng, i.lat])
+    
+    new AMap.Polyline({
+      map: map,
+      path: [...data],
+      strokeColor: "#28F",
+      strokeOpacity: 1,
+      strokeWeight: 10,
+      // showDir: true,
+    })
+
+    // marker.setPosition(new AMap.LngLat(...data[0]))
+    const summaryDistance = getSummary(data)
+    const { distance, distances } = summaryDistance
+    // const points = this.getPoints(data, distance, distances)
+    // const markers = initMarkers(points)
+
+    setTimeout(() => {
+      // setMarkers(data, distance, markers)
+      console.log(getGapTime(distance))
+      console.log('开始执行')
+    }, getGapTime(distance))
+
+    // 获取间隔时间
+    function getGapTime(distance, speed = 600, interval = 800) {
+      const time = distance / speed * 3.6 // 跑完一圈花费的时间
+      const loopIndex = Math.ceil(time * 1000 / interval) // 跑一圈的个数
+      const lineSp = (speed / 3.6) * (interval / 1000)  // 每段距离 米 m/s * s
+      return (distance - lineSp * (loopIndex - 1)) / lineSp * interval
+    }
+
+    // 初始化图标内容
+    function initMarkers({ amidPoints, allPoints }, speed = 600,) {
+      return amidPoints.reverse().map((i) => {
+        const index = allPoints.findIndex((a) => a[0] === i[0] && a[1] === a[1])
+        const marker = new AMap.Marker({
+          map: this.map,
+          autoRotation: true,
+          content: `<div class="arrow"></div>`,
+          offset: new AMap.Pixel(0, 0),
+          position: new AMap.LngLat(...i),
+        })
+        marker.moveAlong(allPoints.slice(index), speed)
+        return marker
+      })
+    }
+    
+    // 获取总线段距离
+    function getSummary(data) {
+      return data.reduce((pre, next) => {
+        const distance = AMap.GeometryUtil.distance(new AMap.LngLat(...pre.lngLat), new AMap.LngLat(...next))
+        return {
+          lngLat: next,
+          distance: pre.distance + distance,
+          distances: [...pre.distances, distance]
+        }
+      }, {
+        lngLat: data[0],
+        distance: 0,
+        distances: []
+      })
+    }
+    
+
+    // 设置获取点位信息 speed 千米/小时
+    function getPoints(lngLats, distance, distances, speed = 600, interval = 800) {
+      const time = distance / speed * 3.6 // 跑完一圈花费的时间
+      const loopIndex = Math.ceil(time * 1000 / interval) // 跑一圈的个数
+      // const lineSpacings = distances.filter(i => !!i) // 线段距离
+      const lineSp = (speed / 3.6) * (interval / 1000)  // 每段距离 米 m/s * s
+       // 所有点位
+      const allPoints = [...lngLats]
+      // 中间的点位
+      const amidPoints = Array.from((new Array(loopIndex))).map((n, index) => {
+        const currentLine = index * lineSp
+        let lngLat
+        for (let i = 0;i < lngLats.length; i++) {
+          if (currentLine === 0) {
+            lngLat = lngLats[0]
+            break;
+          }
+          const summary = distances.slice(0, i + 1).reduce((pre, next) => pre + next) // 当前总线段长度
+          if (currentLine <= summary) {
+            const summaryPre = distances.slice(0, i).reduce((pre, next) => pre + next) // 之前线段长度
+            const currentDis = distances[i] // 当前线段长度
+            const diff = currentLine - summaryPre; // 相差距离
+            const preP = lngLats[i - 1] // 上一个坐标点位
+            const nextP = lngLats[i] // 当前坐标点位
+            const diffRatio = diff / currentDis // 相差x、y倍数
+            lngLat = [
+              preP[0] + (nextP[0] - preP[0]) * diffRatio,
+              preP[1] + (nextP[1] - preP[1]) * diffRatio,
+            ]
+            // 一段线中存在多个点
+            if (diff > lineSp) {
+              const nextIndex = allPoints.findIndex((p) => p[0] === nextP[0] && p[1] === nextP[1])
+              allPoints.splice(nextIndex, 0, lngLat)
+            } else {
+              const preIndex = allPoints.findIndex((p) => p[0] === preP[0] && p[1] === preP[1])
+              allPoints.splice(preIndex + 1, 0, lngLat)
+            }
+            break
+          } else {
+            // 长度不够时、继续往下取距离
+            continue
+          }
+        }
+        return lngLat
+      })
+      return {
+        allPoints,
+        amidPoints
+      }
+    }
+
+    // 设置 markers
+    function setMarkers(lngLats, distance, initMarkers,  speed = 600,  interval = 800) {
+      const time = distance / speed * 3.6
+      const markers= [...initMarkers, markerAnimate(lngLats)]
+      map.remove(markers.splice(0, 1))
+      const loopIndex = Math.ceil(time * 1000 / interval) + 1 // +1代表当跑完有新加入进行删除
+      setInterval(() => {
+        const marker = markerAnimate(lngLats)
+        markers.push(marker)
+        marker.moveAlong(lngLats, speed)
+        if (markers.length >= loopIndex) {
+          const delMarkers = markers.splice(0, 1)
+          map.remove(delMarkers)
+        }
+      }, interval)
+    }
+    // 设置marker动画
+    function markerAnimate(points, speed = 600, animate = true) {
+      const marker = new AMap.Marker({
+        map: this.map,
+        autoRotation: true,
+        content: `<div class="arrow"></div>`,
+        offset: new AMap.Pixel(0, 0),
+      })
+      // speed 千米/小时
+      if (animate) {
+        marker.moveAlong(points, speed)
+      }
+      return marker
+    }
+  </script>
+</body>
+
+</html>
