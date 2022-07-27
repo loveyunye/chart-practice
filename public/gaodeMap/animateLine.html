@@ -19,8 +19,8 @@
       height: 8px;
       box-sizing: border-box;
       position: absolute;
-      left: 50%;
-      top: 50%;
+      left: 0%;
+      top: 0%;
       
       /* transform: translate(-50%,-50%);
       background-color: #fff; */
@@ -66,11 +66,11 @@
     // marker.setPosition(new AMap.LngLat(...data[0]))
     const summaryDistance = getSummary(data)
     const { distance, distances } = summaryDistance
-    // const points = this.getPoints(data, distance, distances)
-    // const markers = initMarkers(points)
+    const points = this.getPoints(data, distance, distances)
+    const markers = initMarkers(points)
 
     setTimeout(() => {
-      // setMarkers(data, distance, markers)
+      setMarkers(data, distance, markers)
       console.log(getGapTime(distance))
       console.log('开始执行')
     }, getGapTime(distance))
