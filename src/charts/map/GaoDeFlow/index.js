@@ -6,18 +6,18 @@ class MapFlow {
   static defaultOptions = {
     fitScreen: true,
     line: {
-      strokeColor: '#28F',
+      strokeColor: '#82F',
       strokeOpacity: 1,
-      strokeWeight: 10,
+      strokeWeight: 8,
     },
     flow: {
       type: 'arrow', // box , arrow 类型
       //  当使用 box 时需留意地图上变化，理解下width、height的旋转后位置
       //  当使用 arrow 时需将width、height保持一致，才能拥有箭头形状
-      width: 12, // 宽
-      height: 8, // 长
+      width: 6, // 宽
+      height: 6, // 长
       color: '#fff',
-      border: 3, // 搭配arrow使用
+      border: 2, // 搭配arrow使用
     },
     config: {
       speed: 600, // 千米/小时

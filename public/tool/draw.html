@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <script src="https://webapi.amap.com/maps?v=2.0&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.MouseTool"></script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=a42eb4e040b919c197c21cec46364545&plugin=AMap.MouseTool"></script>
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" type="text/css">
     <style>
       html,body,#container{
@@ -68,7 +68,8 @@
     <script type="text/javascript">
     var map = new AMap.Map('container',{
         zoom:14,
-      viewMode: '3D',
+      // viewMode: '3D',
+      center: [114.423829,27.801776]
         
     });
 
@@ -90,7 +91,7 @@
         }
         case 'polyline':{
             mouseTool.polyline({
-              strokeColor:'#80d8ff'
+              strokeColor:'#00f'
               //同Polyline的Option设置
             });
             break;
@@ -156,14 +157,24 @@
       }
       console.log(JSON.stringify(json.boxes))
       console.log(JSON.stringify(json.lines))
+      if (json.lines.length) {
+        generateJson(json.lines, '线条')
+      }
     }
     isSatellite = true;
     document.getElementById('tiles').onclick = function(){
       // map.setLayers([isSatellite ? new AMap.TileLayer.Satellite() :  new AMap.TileLayer.RoadNet()])
       // map.setLayers(isSatellite ? [new AMap.TileLayer.Satellite(), new AMap.TileLayer.RoadNet()] :  new AMap.TileLayer.RoadNet())
-      // isSatellite = !isSatellite
+      isSatellite = !isSatellite
+      map.setLayers([isSatellite ? new AMap.TileLayer() :  new AMap.TileLayer.Satellite()])
+      // map.setLayers([new AMap.TileLayer.Satellite(), new AMap.TileLayer.RoadNet()])
+    }
 
-      map.setLayers([new AMap.TileLayer.Satellite(), new AMap.TileLayer.RoadNet()])
+    function generateJson(result, name = 'result') {
+      let link = document.createElement('a')
+      link.download = `GD-${name}.json`
+      link.href = 'data:text/plain,' + JSON.stringify(result)
+      link.click()
     }
 
     console.log(
