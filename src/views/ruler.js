@@ -55,7 +55,8 @@ export default class Rule {
     //   actualTick = Math.min(ticks.length - 1, 2 + Math.round(1 / scale - 1));
     // }
     // const tick = ticks[actualTick]; // 刻度线长
-    const tick = 8;
+    // const tick = 8;
+    const tick = 5;
     const tickLong = (height - 32) * ratio; // 24 为上面文字、下面文字
     for (let j = startTick; j * tick < endTick / scale; j++) {
       ctx.lineWidth =
@@ -118,16 +119,16 @@ export default class Rule {
 
   // 绘制文本
   drawText(tick, ctx, position, ratio) {
-    // if (!isHorizontal) {
-    //   ctx.save();
-    //   ctx.translate(position.x, position.y);
-    //   ctx.rotate(Math.PI / 2);
-    // }
+    // const { ctx, ratio } = this;
     const label = `${tick}米`;
     ctx.fillStyle = '#eee';
     ctx.font = `${10 * ratio}px Arial`;
     ctx.textBaseline = 'middle';
-    ctx.fillText(label, position.x - label.length * 6, position.y);
+    ctx.fillText(
+      label,
+      tick === 0 ? position.x : position.x - label.length * 6,
+      position.y,
+    );
     ctx.restore();
   }
 
