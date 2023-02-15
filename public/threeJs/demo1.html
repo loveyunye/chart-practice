@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThreeJs-demo</title>
+  <script src="./libs/three.min.js"></script>
+  <script src="./libs/OrbitControls.js"></script>
+  <script src="./libs/stats.min.js"></script>
+  <script src="./libs/dat.gui.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+
+</head>
+
+<body>
+  <script>
+    var SCREEN_WIDTH = window.innerWidth;
+    var SCREEN_HEIGHT = window.innerHeight;
+
+    var container, stats;
+    var camera, scene, renderer, mesh, grid, controls;
+
+    // -----
+
+    init();
+    animate();
+
+    function creatGeometry(geometry, material, scene, x = 0, y = 0, z = 0) {
+      // 创建图形
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.position.x = x;
+      mesh.position.y = y;
+      mesh.position.z = z;
+
+      scene.add(mesh);
+      // 添加线框
+      var wireframe = new THREE.WireframeGeometry(geometry);
+      var line = new THREE.LineSegments(wireframe);
+      line.material.color.setHex(0x555555);
+      mesh.add(line);
+    }
+
+    function init() {
+
+      container = document.createElement('div');
+      document.body.appendChild(container);
+
+      scene = new THREE.Scene();
+
+      camera = new THREE.PerspectiveCamera(50, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 10000);
+      camera.position.y = 200;
+      camera.position.x = 100;
+      camera.position.z = 800;
+      camera.lookAt(scene.position);
+
+      grid = new THREE.GridHelper(2000, 40, 0x555555, 0xbbbbbb);
+      grid.material.transparent = true;
+      grid.position.y = -100;
+      scene.add(grid);
+
+      // var material = new THREE.MeshLambertMaterial();
+      var material = new THREE.MeshNormalMaterial();
+      // var material = new THREE.MeshPhongMaterial();
+
+      var cube = new THREE.BoxGeometry(90, 90, 90);
+      var sphere = new THREE.SphereGeometry(60, 24, 16);
+      var cylinder = new THREE.CylinderGeometry(50, 50, 110, 16);
+      var torus = new THREE.TorusGeometry(50, 20, 8, 20);
+      var coneBuffer = new THREE.ConeBufferGeometry(50, 120, 32);
+      var dodecahedronBuffer = new THREE.DodecahedronBufferGeometry(60, 0);
+      var octahedron = new THREE.OctahedronGeometry(60, 0);
+      var tetrahedron = new THREE.TetrahedronGeometry(60, 0);
+      var torusKnot = new THREE.TorusKnotGeometry(40, 10, 40, 10);
+      var icosahedron = new THREE.IcosahedronGeometry(60, 0);
+
+      creatGeometry(cube, material, scene, -210);
+      creatGeometry(sphere, material, scene, -70);
+      creatGeometry(cylinder, material, scene, 70);
+      creatGeometry(torus, material, scene, 210);
+      creatGeometry(coneBuffer, material, scene, 350);
+
+      creatGeometry(dodecahedronBuffer, material, scene, -210, 0, 200);
+      creatGeometry(octahedron, material, scene, -70, 0, 200);
+      // creatGeometry(tetrahedron, material, scene, 70, 0, 200);
+      creatGeometry(torusKnot, material, scene, 210, 0, 200);
+      // creatGeometry(icosahedron, material, scene, 350, 0, 200);
+
+      const verticesOfCube = [
+        -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+        -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1,
+      ];
+
+      const indicesOfFaces = [
+        2, 1, 0, 0, 3, 2,
+        0, 4, 7, 7, 3, 0,
+        0, 1, 5, 5, 4, 0,
+        1, 2, 6, 6, 5, 1,
+        2, 3, 7, 7, 6, 2,
+        4, 5, 6, 6, 7, 4
+      ];
+
+      const geometry2222 = new THREE.PolyhedronGeometry(verticesOfCube, indicesOfFaces, 60, 2);
+
+      // creatGeometry(geometry2222, material, scene, 70, 0, 200);
+
+      //立方体
+      var cubeGeometry = new THREE.BufferGeometry();
+      const vertices = new Float32Array([
+        10, 20, 10,
+        -10, 10, 10,
+        -10, -20, 10,
+        10, -5, 10,
+        10, -2, -10,
+        10, 10, -10,
+        -10, 10, -10,
+        -10, -10, -10,
+      ])
+      cubeGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+      var indexes = new Uint16Array([
+        0, 1, 2,
+        0, 2, 3,
+        0, 3, 4,
+        0, 4, 5,
+        1, 6, 7,
+        1, 7, 2,
+        6, 5, 4,
+        6, 4, 7,
+        5, 6, 1,
+        5, 1, 0,
+        3, 2, 7,
+        3, 7, 4,
+      ])
+      //初始化存放颜色信息的序列化数组
+      // const colors = new Float32Array([
+      //           1.0, 0.0, 0.0,
+      //           0.0, 1.0, 0.0,
+      //           0.0, 0.0, 1.0,
+      //           0.0, 0.5, 0.5
+      //       ]);
+      //       //设置颜色信息
+      //       cubeGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      cubeGeometry.index = new THREE.BufferAttribute(indexes, 1);
+       //生成法向量
+       cubeGeometry.computeVertexNormals();
+      var materialOpacity = new THREE.MeshPhongMaterial({
+          color: 0xff0000,
+          // transparent设置为true，开启透明，否则opacity不起作用
+          transparent: true,
+          // 设置材质透明度
+          opacity: 0.2,
+          // wireframe: false,
+        });
+        var cubeMaterial = new THREE.MeshLambertMaterial({
+                vertexColors: THREE.VertexColors, //使用缓存中的颜色
+                side: THREE.DoubleSide
+            });
+      
+    //   var cubeMaterial = new THREE.MeshLambertMaterial({
+    //     vertexColors: THREE.VertexColors, //使用缓存中的颜色
+    //     side: THREE.DoubleSide
+    // });
+
+      creatGeometry(cubeGeometry, material, scene, 70, 0, 200);
+
+
+
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true
+      });
+      renderer.setClearColor(0xeeeeee, 1);
+      renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+      container.appendChild(renderer.domElement);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+      // stats = new Stats();
+      // container.appendChild(stats.domElement);
+
+      const heartShape = new THREE.Shape()
+      heartShape.Move
+      // heartShape.Move
+    }
+
+    function animate() {
+      // mesh.rotation.x += 0.01;
+      // mesh.rotation.y += 0.02;
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+      // stats.update();
+    }
+
+
+
+  </script>
+</body>
+
+</html>
