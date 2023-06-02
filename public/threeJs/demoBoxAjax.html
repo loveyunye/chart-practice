@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThreeJs-demo</title>
+  <script src="./libs/three.min.js"></script>
+  <script src="./libs/OrbitControls.js"></script>
+  <script src="./libs/stats.min.js"></script>
+  <script src="./libs/dat.gui.min.js"></script>
+  <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+
+</head>
+
+<body>
+  <script>
+    var SCREEN_WIDTH = window.innerWidth;
+    var SCREEN_HEIGHT = window.innerHeight;
+
+    var container, stats;
+    var camera, scene, renderer, mesh, grid, controls;
+
+    // -----
+
+    init();
+    animate();
+
+    function creatGeometry(geometry, material, scene, x = 0, y = 0, z = 0) {
+      // 创建图形
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.position.x = x;
+      mesh.position.y = y;
+      mesh.position.z = z;
+
+      scene.add(mesh);
+      // 添加线框
+      var wireframe = new THREE.WireframeGeometry(geometry);
+      var line = new THREE.LineSegments(wireframe);
+      line.material.color.setHex(0x555555);
+      mesh.add(line);
+    }
+
+    function init() {
+      container = document.createElement('div');
+      document.body.appendChild(container);
+      scene = new THREE.Scene();
+
+      camera = new THREE.PerspectiveCamera(50, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 10000);
+      camera.position.y = 1200;
+      camera.position.x = 100;
+      camera.position.z = 1800;
+      camera.lookAt(scene.position);
+
+      grid = new THREE.GridHelper(2000, 40, 0x555555, 0xbbbbbb);
+      grid.material.transparent = true;
+      grid.position.y = -100;
+      scene.add(grid);
+
+      ajax('./json/three-result.json',(err, json) => {
+        // window.result = json.slice(0, 200);
+        window.result = json;
+        result.forEach((i, index) => {
+          var cube = new THREE.BoxGeometry(i[3], i[5], i[4]);
+          // cube.setAttribute('id', index)
+          const color = i[6] === 0.3 ? 0x00ff00 : 0x1772b4
+          const material = new THREE.MeshBasicMaterial( {color } );
+          creatGeometry(cube, material, scene, i[0], i[2], i[1]);
+        })
+        // addClick()
+      })
+      
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true
+      });
+      renderer.setClearColor(0xeeeeee, 1);
+      renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+      container.appendChild(renderer.domElement);
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      const heartShape = new THREE.Shape()
+      heartShape.Move
+    }
+
+    function animate() {
+      // mesh.rotation.x += 0.01;
+      // mesh.rotation.y += 0.02;
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+      // stats.update();
+    }
+
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+
+    function onMouseClick(event) {
+      console.log(event)
+
+      //通过鼠标点击的位置计算出raycaster所需要的点的位置，以屏幕中心为原点，值的范围为-1到1.
+
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+      // 通过鼠标点的位置和当前相机的矩阵计算出raycaster
+      raycaster.setFromCamera(mouse, camera);
+
+      // 获取raycaster直线和所有模型相交的数组集合
+      var intersects = raycaster.intersectObjects(scene.children);
+
+      // console.log(intersects);
+
+      //将所有的相交的模型的颜色设置为红色，如果只需要将第一个触发事件，那就数组的第一个模型改变颜色即可
+      // for ( var i = 0; i < intersects.length; i++ ) {
+      //     intersects[i].object.material.color.set( 0xff0000 );
+      // }
+
+      if (intersects.length) {
+        const position = intersects[0].object.position;
+        const item = result.find((i) => i[0] === position.x && i[1] === position.z && i[2] === position.y)
+        console.log(intersects[0].object.material.color.getHex())
+        intersects[0].object.material.color.set(16711680);
+      }
+
+    }
+    function addClick() {
+      // window.addEventListener('mousemove', onMouseClick, false);
+      window.addEventListener('click', onMouseClick, false);
+    }
+  </script>
+</body>
+
+</html>

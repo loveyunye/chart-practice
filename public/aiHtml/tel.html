@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <!-- <a href="tel:15879067853">外面打电话</a> -->
+
+  <button onclick="call()">触发打电话</button>
+
+  <iframe id="iframe" src="/aiHtml/telIframe.html" frameborder="0"></iframe>
+
+  <script>
+    function call() {
+      const current = window.location.href;
+      console.log(current)
+      window.location.href = 'tel:15879067853'
+      setTimeout(() => {
+        window.location.href = current
+      }, 0)
+      
+      // const iframe = document.querySelector('#iframe')
+      // console.log(iframe)
+      // console.log()
+      // const tel = 
+      // iframe.click();
+    }
+  </script>
+</body>
+</html>

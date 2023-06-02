@@ -40,5 +40,5 @@
     "monaco-editor-webpack-plugin": "^1.8.2",
     "prettier": "^1.19.1",
     "vue-template-compiler": "^2.6.10"
-  },
+  }
 }

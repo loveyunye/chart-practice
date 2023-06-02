@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>龙游美食地图</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style type="text/css">
+		html, body, #mapContainer {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+	<div id="mapContainer"></div>
+	<script src="https://webapi.amap.com/maps?v=1.4.15&key=您的高德地图API Key"></script>
+	<script type="text/javascript">
+		var map = new AMap.Map("mapContainer", {
+			resizeEnable: true,
+			center: [119.168, 29.034],
+			zoom: 15
+		});
+
+		// 添加店铺标记
+		var markers = [
+			{
+				name: "龙游鸡蛋烧",
+				position: [119.16953, 29.03277]
+			},
+			{
+				name: "龙游豆腐脑",
+				position: [119.16788, 29.03524]
+			},
+			{
+				name: "龙游鸭血粉丝汤",
+				position: [119.16877, 29.03266]
+			},
+			{
+				name: "龙游酱肉",
+				position: [119.16799, 29.03503]
+			},
+			{
+				name: "龙游炸肉",
+				position: [119.16696, 29.03189]
+			},
+			{
+				name: "龙游糯米鸡",
+				position: [119.16821, 29.03500]
+			},
+			{
+				name: "龙游油炸饭团",
+				position: [119.16848, 29.03412]
+			},
+			{
+				name: "龙游扁食",
+				position: [119.16892, 29.03285]
+			},
+			{
+				name: "龙游腐竹烧饼",
+				position: [119.16793, 29.03261]
+			},
+			{
+				name: "龙游糯米糍",
+				position: [119.16737, 29.03657]
+			}
+		];
+
+		for (var i = 0; i < markers.length; i++) {
+			var marker = new AMap.Marker({
+				position: markers[i].position,
+				title: markers[i].name,
+				map: map
+			});
+
+			// 添加店名标签
+			var label = new AMap.Text({
+				text: markers[i].name,
+				position: markers[i].position,
+				offset: new AMap.Pixel(0, -20),
+				style: {
+					color: "red",
+					fontSize: "14px",
+					fontWeight: "bold"
+				}
+			});
+
+			map.add(label);
+		}
+
+		// 添加龙游高铁站标记
+		var stationMarker = new AMap.Marker({
+			position: [119.16541, 29.03732],
+			title: "龙游高铁站",
+			map: map
+		});
+
+		// 添加站名标签
+		var stationLabel = new AMap.Text({
+			text: "龙游高铁站",
+			position: [119.176214,28.085232],
+			offset: new AMap.Pixel(0, -20),
+			style: {
+				color: "red",
+				fontSize: "14px",
+				fontWeight: "bold"
+			}
+		});
+
+		map.add(stationLabel)
+</script>
+</body>
+</html>

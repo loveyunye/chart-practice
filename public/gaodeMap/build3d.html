@@ -65,6 +65,16 @@
       distance: 3900,
     };
 
+    // const url = 'http://192.168.3.153:8080/XOffice/interface/json/industryTypeForOrgId/getIndustryTypeNow?orgId=360000'
+    // const url = 'https://rh.2hrh.com/XOffice/interface/json/industryTypeForOrgId/getIndustryTypeNow?orgId=360000'
+    const url = 'https://www.jx968969.com/XOffice/interface/json/industryTypeForOrgId/getIndustryTypeNow?orgId=360000'
+
+    
+    ajax(url, function(err, data) {
+      console.log(err)
+      console.log(data)
+    })
+
     // ajax('/json/build.json', function (err, data) {
     // ajax('/json/nanchang.json', function (err, data) {
     ajax('/json/jianzhu.json', function (err, data) {

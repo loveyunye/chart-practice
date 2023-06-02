@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>龙游小吃地图</title>
+  <script src="https://webapi.amap.com/maps?v=1.4.15&key=a42eb4e040b919c197c21cec46364545"></script>
+  <style>
+    #container {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script>
+    console.log(123)
+    var map = new AMap.Map('container', {
+      zoom: 15,
+      center: [119.174881,28.081141] // 龙游县地图中心点坐标
+    });
+    var stationMarker = new AMap.Marker({
+			position: [119.176214,28.085232],
+			title: "龙游高铁站",
+			map: map
+		});
+
+    var foods = [
+      {
+        name: '鲜美烤肠',
+        location: [119.173740, 28.079556]
+      },
+      {
+        name: '龙游年糕',
+        location: [119.174359, 28.083383]
+      },
+      {
+        name: '君子龙游糕团',
+        location: [119.176246, 28.082663]
+      },
+      {
+        name: '双胞胎臭豆腐',
+        location: [119.169452, 28.085887]
+      },
+      {
+        name: '吴姨小笼包',
+        location: [119.169889, 28.078750]
+      },
+      {
+        name: '陈记糯米团子',
+        location: [119.173268, 28.083467]
+      },
+      {
+        name: '小虾仁芝士虾饼',
+        location: [119.173206, 28.078861]
+      },
+      {
+        name: '阿婆糖油果子',
+        location: [119.177576, 28.081783]
+      },
+      {
+        name: '黄记油条',
+        location: [119.178564, 28.083656]
+      },
+      {
+        name: '万年糯米糍',
+        location: [119.176643, 28.080146]
+      },
+      {
+        name: '麻辣先生',
+        location: [119.166686, 28.088692]
+      },
+      {
+        name: '乡村烤鱼',
+        location: [119.172667, 28.081036]
+      },
+      {
+        name: '小吕糖葫芦',
+        location: [119.171832, 28.078081]
+      },
+      {
+        name: '豆皮大王',
+        location: [119.173261, 28.080066]
+      },
+      {
+        name: '姜氏奶香蛋糕',
+        location: [119.174245, 28.081032],
+      },
+      {
+        name: '陈记五香豆腐干',
+        location: [119.175483, 28.081672],
+      }
+    ]
+
+    for (var i = 0; i < foods.length; i++) {
+			var marker = new AMap.Marker({
+				position: foods[i].location,
+				title: foods[i].name,
+				map: map
+			});
+
+			// 添加店名标签
+			var label = new AMap.Text({
+				text: i + '.' + foods[i].name,
+				position: foods[i].location,
+				offset: new AMap.Pixel(0, -20),
+				style: {
+					color: "red",
+					fontSize: "14px",
+					fontWeight: "bold"
+				}
+			});
+
+			map.add(label);
+		}
+  </script>
+</body>
+</html>
