@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+    <!-- <script src="../cdn/echart.min.js"></script> -->
+    <!-- <script src="https://rh.2hrh.com/XOffice/static/plugins/echart/echarts.min.js"></script> -->
+    <script src="https://rh.2hrh.com/XOffice/static/js/plugins/echarts/echarts.min.js"></script>
+  </head>
+
+  <body>
+    <div id="chart" style="height: 800px;width: 800px;"></div>
+    <script>
+      /**
+此版本通过设置geoindex && seriesIndex: [1] 属性来实现geo和map共存，来达到hover散点和区域显示tooltip的效果
+
+默认情况下，map series 会自己生成内部专用的 geo 组件。但是也可以用这个 geoIndex 指定一个 geo 组件。这样的话，map 和 其他 series（例如散点图）就可以共享一个 geo 组件了。并且，geo 组件的颜色也可以被这个 map series 控制，从而用 visualMap 来更改。
+当设定了 geoIndex 后，series-map.map 属性，以及 series-map.itemStyle 等样式配置不再起作用，而是采用 geo 中的相应属性。
+
+http://echarts.baidu.com/option.html#series-map.geoIndex
+
+并且加了pin气泡图标以示数值大小
+*/
+      var myChart = echarts.init(document.getElementById('chart'));
+      newExample();
+
+      var cityMap = {
+        南昌市: '360100',
+        景德镇市: '360200',
+        萍乡市: '360300',
+        九江市: '360400',
+        新余市: '360500',
+        鹰潭市: '360600',
+        赣州市: '360700',
+        吉安市: '360800',
+        宜春市: '360900',
+        抚州市: '361000',
+        上饶市: '361100',
+      };
+
+      //---------------------------------------------------------------------------
+      var geoCoordMap = {
+        南昌市: ['115.865046', '28.691452'],
+        景德镇市: ['117.184768', '29.273704'],
+        萍乡市: ['113.863946', '27.628861'],
+        九江市: ['116.01649', '29.522972'],
+        新余市: ['114.922753', '27.823598'],
+        鹰潭市: ['117.075673', '28.265304'],
+        赣州市: ['114.943069', '25.837818'],
+        吉安市: ['114.999689', '27.121751'],
+        宜春市: ['114.420899', '27.82083'],
+        抚州市: ['116.366381', '27.954887'],
+        上饶市: ['117.948715', '28.462638'],
+      };
+
+      function convertData(data) {
+        var res = [];
+        for (var i = 0; i < data.length; i++) {
+          var geoCoord = geoCoordMap[data[i].name];
+          if (geoCoord) {
+            res.push({
+              name: data[i].name,
+              value: geoCoord.concat(data[i].value),
+            });
+          }
+        }
+        return res;
+      }
+
+      function newExample() {
+        ajax('/json/jx_geojson.json', function(err, chinaJson) {
+          echarts.registerMap('jiangxi', chinaJson);
+
+          var chartOptions2 = {
+            geo: {
+              aspectScale: 0.88,
+              show: true,
+              map: 'jiangxi',
+              zoom: 1.1,
+              zlevel: 2,
+              label: {
+                normal: {
+                  show: false,
+                },
+                emphasis: {
+                  show: false,
+                },
+              },
+              roam: false,
+              itemStyle: {
+                normal: {
+                  borderColor: 'rgba(0, 228, 255, 1)',
+                  borderWidth: 2,
+                  areaColor: 'rgba(0, 105, 184, 1)',
+                },
+                emphasis: {
+                  borderColor: 'rgba(0, 228, 255, 1)',
+                  borderWidth: 2,
+                  areaColor: 'rgba(0, 105, 184, 1)',
+                },
+              },
+            },
+            series: [
+              {
+                type: 'map',
+                map: 'jiangxi',
+                zoom: 1.1,
+                aspectScale: 0.88,
+                top: 70,
+                left: 110,
+                roam: false,
+                itemStyle: {
+                  normal: {
+                    borderColor: 'rgba(0, 228, 255, 1)',
+                    borderWidth: 2,
+                    areaColor: 'rgba(0, 105, 184, 1)',
+                  },
+                  emphasis: {
+                    borderColor: 'rgba(0, 228, 255, 1)',
+                    borderWidth: 2,
+                    areaColor: 'rgba(0, 105, 184, 1)',
+                  },
+                },
+                zlevel: 0,
+              },
+              {
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                data: convertData([
+                  { name: '上饶市', value: '14' },
+                  { name: '抚州市', value: '14' },
+                  { name: '九江市', value: '16' },
+                  { name: '吉安市', value: '15' },
+                  { name: '鹰潭市', value: '3' },
+                  { name: '萍乡市', value: '6' },
+                  { name: '南昌市', value: '21' },
+                  { name: '赣州市', value: '20' },
+                  { name: '景德镇市', value: '3' },
+                  { name: '宜春市', value: '15' },
+                  { name: '赣江新区', value: '1' },
+                  { name: '新余市', value: '3' },
+                ]),
+                symbolSize: 0,
+                label: {
+                  formatter: '{b}',
+                  position: 'bottom',
+                  show: true,
+                  color: '#fff',
+                  fontSize: 14,
+                  offset: [0, 24],
+                },
+                zlevel: 3,
+              },
+              {
+                name: 'Top 5',
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                // symbol: 'image://http://127.0.0.1:52993/imgs/map_icon.png', // image://${ctx}/static/image/kfqHomePage/map_icon_a.png
+                // symbolSize: [50, 50],
+                symbolSize: 0.1,
+                symbolOffset: [0, '-20%'],
+                label: {
+
+                  normal: {
+                    show: true,
+                    offset: [0, -10],
+                    formatter: function(value) {
+                      // const style = Number(value.data.value[2]) % 2 == 0 ? 'a' : 'b'
+                      // return [`{${style}|${value.data.value[2]}}`].join('\n');
+                      return [`{a|${value.data.value[2]}}`].join('\n');
+                    },
+                    rich: {
+                      a: {
+                        height: 10,
+                        width: 24,
+                        padding: [6, 10, 30],
+                        fontSize: 14,
+                        lineHeight: 20,
+                        align: 'center',
+                        verticalAlign: 'top',
+                        color: '#fff',
+                        backgroundColor: {
+                          image:
+                            'http://127.0.0.1:52993/imgs/map_icon.png',
+                        },
+                      },
+
+                    },
+                  },
+                  emphasis: {
+                    show: true,
+                    offset: [0, -16],
+                    formatter: function(value) {
+                      return [`{a|${value.data.value[2]}}`].join('\n');
+                    },
+                    rich: {
+                      a: {
+                        height: 24,
+                        width: 40,
+                        padding: [2, 10, 30],
+                        fontSize: 18,
+                        lineHeight: 20,
+                        align: 'center',
+                        verticalAlign: 'top',
+                        color: '#fff',
+                        backgroundColor: {
+                          image:
+                            'http://127.0.0.1:52993/imgs/map_icon_a.png',
+                        },
+                      }
+                    },
+                  }
+                },
+                data: convertData([
+                  { name: '上饶市', value: '14' },
+                  { name: '抚州市', value: '14' },
+                  { name: '九江市', value: '16' },
+                  { name: '吉安市', value: '15' },
+                  { name: '鹰潭市', value: '3' },
+                  { name: '萍乡市', value: '6' },
+                  { name: '南昌市', value: '21' },
+                  { name: '赣州市', value: '20' },
+                  { name: '景德镇市', value: '3' },
+                  { name: '宜春市', value: '15' },
+                  { name: '赣江新区', value: '1' },
+                  { name: '新余市', value: '3' },
+                ]),
+                hoverAnimation: false,
+                zlevel: 4,
+              },
+            ],
+          };
+
+          var optionMap = {
+            tooltip: {
+              trigger: 'item',
+              formatter: '{b}',
+            },
+            geo: {
+              roam: false,
+              map: 'jiangxi',
+              zoom: 1.2,
+              selectedMode: 'single',
+              label: {
+                normal: {
+                  show: true,
+                  textStyle: {
+                    color: '#fff',
+                  },
+                },
+                emphasis: {
+                  show: true,
+                },
+              },
+              itemStyle: {
+                normal: {
+                  color: 'rgb(30,100,172)',
+                  borderColor: '#FFF',
+                },
+                emphasis: {
+                  show: true,
+                  color: 'rgb(90,170,235)',
+                  borderColor: '#FFF',
+                },
+              },
+            },
+            series: [
+              {
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                symbol: 'pin',
+                symbolSize: 37,
+                showEffectOn: 'render',
+                rippleEffect: {
+                  scale: 0,
+                  brushType: 'stroke',
+                },
+                data: convertData([
+                  { name: '上饶市', value: '14' },
+                  { name: '抚州市', value: '14' },
+                  { name: '九江市', value: '16' },
+                  { name: '吉安市', value: '15' },
+                  { name: '鹰潭市', value: '3' },
+                  { name: '萍乡市', value: '6' },
+                  { name: '南昌市', value: '21' },
+                  { name: '赣州市', value: '20' },
+                  { name: '景德镇市', value: '3' },
+                  { name: '宜春市', value: '15' },
+                  { name: '赣江新区', value: '1' },
+                  { name: '新余市', value: '3' },
+                ]),
+                itemStyle: {
+                  normal: {
+                    color: 'rgb(15, 218, 154)',
+                  },
+                },
+                label: {
+                  normal: {
+                    show: true,
+                    position: 'inside',
+                    textStyle: {
+                      color: '#fff',
+                    },
+                  },
+                },
+                zlevel: 1,
+              },
+              {
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                symbol: 'circle',
+                symbolSize: 5,
+                showEffectOn: 'render',
+                rippleEffect: {
+                  scale: 10,
+                  brushType: 'stroke',
+                },
+                data: convertData([
+                  { name: '上饶市', value: '14' },
+                  { name: '抚州市', value: '14' },
+                  { name: '九江市', value: '16' },
+                  { name: '吉安市', value: '15' },
+                  { name: '鹰潭市', value: '3' },
+                  { name: '萍乡市', value: '6' },
+                  { name: '南昌市', value: '21' },
+                  { name: '赣州市', value: '20' },
+                  { name: '景德镇市', value: '3' },
+                  { name: '宜春市', value: '15' },
+                  { name: '赣江新区', value: '1' },
+                  { name: '新余市', value: '3' },
+                ]),
+                itemStyle: {
+                  normal: {
+                    color: '#f4e925',
+                  },
+                },
+                zlevel: 1,
+              },
+            ],
+          };
+
+          myChart.setOption(chartOptions2);
+        });
+      }
+
+      function lineExample() {
+        // myChart.showLoading();
+        ajax('/json/jxMap.json', function(err, geoJson) {
+          console.log(geoJson);
+          echarts.registerMap('jiangxi', geoJson);
+          // myChart.hideLoading();
+          var geoCoordMap = {
+            赣州市: [114.940278, 25.85097],
+            吉安市: [114.986373, 27.111699],
+            上饶市: [117.971185, 28.44442],
+            九江市: [115.992811, 29.712034],
+            抚州市: [116.358351, 27.98385],
+            宜春市: [114.391136, 27.8043],
+            南昌市: [115.892151, 28.676493],
+            景德镇市: [117.214664, 29.29256],
+            萍乡市: [113.852186, 27.622946],
+            鹰潭市: [117.033838, 28.238638],
+            新余市: [114.930835, 27.810834],
+            赣江新区: [116.196027, 28.920179],
+          };
+          var data = [
+            { name: '赣州市', value: 199 },
+            { name: '吉安市', value: 39 },
+            { name: '上饶市', value: 152 },
+            { name: '九江市', value: 299 },
+            { name: '抚州市', value: 89 },
+            { name: '宜春市', value: 52 },
+            { name: '南昌市', value: 9 },
+            { name: '景德镇市', value: 352 },
+            { name: '萍乡市', value: 99 },
+            { name: '鹰潭市', value: 39 },
+            { name: '新余市', value: 480 },
+            { name: '赣江新区', value: 480 },
+          ];
+          var max = 480,
+            min = 9; // todo
+          var maxSize4Pin = 100,
+            minSize4Pin = 20;
+
+          var convertData = function(data) {
+            var res = [];
+            for (var i = 0; i < data.length; i++) {
+              var geoCoord = geoCoordMap[data[i].name];
+              if (geoCoord) {
+                res.push({
+                  name: data[i].name,
+                  value: geoCoord.concat(data[i].value),
+                });
+              }
+            }
+            return res;
+          };
+
+          option = {
+            title: {
+              text: '“绿色金融” - 江西省',
+              subtext: '',
+              x: 'center',
+              textStyle: {
+                color: '#ccc',
+              },
+            },
+            tooltip: {
+              trigger: 'item',
+              formatter: function(params) {
+                if (typeof params.value[2] == 'undefined') {
+                  return params.name + ' : ' + params.value;
+                } else {
+                  return params.name + ' : ' + params.value[2];
+                }
+              },
+            },
+            legend: {
+              orient: 'vertical',
+              y: 'bottom',
+              x: 'right',
+              data: ['credit_pm2.5'],
+              textStyle: {
+                color: '#fff',
+              },
+            },
+            visualMap: {
+              show: false,
+              min: 0,
+              max: 500,
+              left: 'left',
+              top: 'bottom',
+              text: ['高', '低'], // 文本，默认为数值文本
+              calculable: true,
+              seriesIndex: [1],
+              inRange: {
+                // color: ['#3B5077', '#031525'] // 蓝黑
+                // color: ['#ffc0cb', '#800080'] // 红紫
+                // color: ['#3C3B3F', '#605C3C'] // 黑绿
+                color: ['#0f0c29', '#302b63', '#24243e'], // 黑紫黑
+                // color: ['#23074d', '#cc5333'] // 紫红
+                // color: ['#00467F', '#A5CC82'] // 蓝绿
+                // color: ['#1488CC', '#2B32B2'] // 浅蓝
+                // color: ['#00467F', '#A5CC82'] // 蓝绿
+                // color: ['#00467F', '#A5CC82'] // 蓝绿
+                // color: ['#00467F', '#A5CC82'] // 蓝绿
+                // color: ['#00467F', '#A5CC82'] // 蓝绿
+              },
+            },
+            // toolbox: {
+            //     show: true,
+            //     orient: 'vertical',
+            //     left: 'right',
+            //     top: 'center',
+            //     feature: {
+            //             dataView: {readOnly: false},
+            //             restore: {},
+            //             saveAsImage: {}
+            //             }
+            // },
+            geo: {
+              show: true,
+              map: 'jiangxi',
+              label: {
+                normal: {
+                  show: false,
+                },
+                emphasis: {
+                  show: false,
+                },
+              },
+              roam: true,
+              itemStyle: {
+                normal: {
+                  areaColor: '#031525',
+                  borderColor: '#3B5077',
+                },
+                emphasis: {
+                  areaColor: '#2B91B7',
+                },
+              },
+            },
+            series: [
+              // {
+              //   name: 'credit_pm2.5',
+              //   type: 'scatter',
+              //   coordinateSystem: 'geo',
+              //   data: convertData(data),
+              //   symbolSize: function (val) {
+              //     return val[2] / 10;
+              //   },
+              //   label: {
+              //     normal: {
+              //       formatter: '{b}',
+              //       position: 'right',
+              //       show: true
+              //     },
+              //     emphasis: {
+              //       show: true
+              //     }
+              //   },
+              //   itemStyle: {
+              //     normal: {
+              //       color: '#05C3F9'
+              //     }
+              //   }
+              // },
+              {
+                type: 'map',
+                map: 'jiangxi',
+                geoIndex: 0,
+                aspectScale: 0.75, //长宽比
+                showLegendSymbol: false, // 存在legend时显示
+                label: {
+                  normal: {
+                    show: false,
+                  },
+                  emphasis: {
+                    show: false,
+                    textStyle: {
+                      color: '#fff',
+                    },
+                  },
+                },
+                roam: true,
+                itemStyle: {
+                  normal: {
+                    areaColor: '#031525',
+                    borderColor: '#3B5077',
+                  },
+                  emphasis: {
+                    areaColor: '#2B91B7',
+                  },
+                },
+                animation: false,
+                data: data,
+              },
+              {
+                name: '点',
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                symbol: 'pin',
+                symbolSize: function(val) {
+                  var a = (maxSize4Pin - minSize4Pin) / (max - min);
+                  var b = minSize4Pin - a * min;
+                  b = maxSize4Pin - a * max;
+                  return a * val[2] + b;
+                },
+                label: {
+                  normal: {
+                    show: true,
+                    textStyle: {
+                      color: '#fff',
+                      fontSize: 9,
+                    },
+                  },
+                },
+                itemStyle: {
+                  normal: {
+                    color: '#F62157', //标志颜色
+                  },
+                },
+                zlevel: 6,
+                data: convertData(data),
+              },
+              {
+                name: 'Top 5',
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                data: convertData(
+                  data
+                    .sort(function(a, b) {
+                      return b.value - a.value;
+                    })
+                    .slice(0, 5),
+                ),
+                symbolSize: function(val) {
+                  return val[2] / 10;
+                },
+                showEffectOn: 'render',
+                rippleEffect: {
+                  brushType: 'stroke',
+                },
+                hoverAnimation: true,
+                label: {
+                  normal: {
+                    formatter: '{b}',
+                    position: 'right',
+                    show: true,
+                  },
+                },
+                itemStyle: {
+                  normal: {
+                    color: '#05C3F9',
+                    shadowBlur: 10,
+                    shadowColor: '#05C3F9',
+                  },
+                },
+                zlevel: 1,
+              },
+            ],
+          };
+          myChart.setOption(option);
+        });
+      }
+    </script>
+  </body>
+</html>
